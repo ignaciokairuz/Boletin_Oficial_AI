@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Gastos Públicos</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 5px solid #2196F3; }
+        .card.expensive { border-left-color: #f44336; }
+        .amount { font-size: 1.2em; font-weight: bold; color: #333; }
+        .date { color: #666; font-size: 0.9em; }
+        .tag { background: #eee; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; }
+        a.btn { display: inline-block; background: #2196F3; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Monitor de Gastos Públicos</h1>
+        <p><strong>Boletín Oficial N° 7285</strong> | Fecha: 16/01/2026</p>
+        <p>Analizadas 401 normas | Detectados 80 gastos</p>
+    </div>
+
+    <div class="feed">
+
+        <div class="card expensive">
+            <div class="amount">$7,800,000,000.00</div>
+            <p>Financiar la construcción de infraestructura de seguridad pública, como comisarías y centros de control, para reforzar la prevención del delito.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Seguridad</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894751" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$4,999,500,730.60</div>
+            <p>Construir y ampliar la red de agua potable y sus conexiones domiciliarias, garantizando acceso universal y mejorando la salud pública.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Desarrollo Humano y Hábitat</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4895043" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$900,637,920.64</div>
+            <p>Ampliar e impermeabilizar la Escuela Infantil N.º 2 “Mane Bernardo” para ofrecer espacios seguros, cómodos y adecuados al desarrollo infantil.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Educación</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4895028" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$660,922,416.00</div>
+            <p>Adjudicar la licitación única para adquirir equipamiento, tecnología y obras de seguridad, fortaleciendo la capacidad operativa y la prevención del delito.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Seguridad</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894752" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$625,014,371.13</div>
+            <p>Financiar el funcionamiento y fortalecimiento institucional del Consejo de la Magistratura, garantizando la independencia y la eficiencia judicial.</p>
+            <div class="meta">
+                <span class="tag">Consejo de la Magistratura</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894963" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$577,969,857.05</div>
+            <p>Rehabilitar y poner en valor la fachada, reparar e impermeabilizar la Escuela Primaria N.º 23 “Abel Ayerza”, mejorando su seguridad y ambiente educativo.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Educación</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4895030" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$444,753,000.00</div>
+            <p>Extender la Orden de Compra Abierta para asegurar la adquisición continua de insumos, medicamentos y equipos médicos esenciales para la salud pública.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894892" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$373,500,000.00</div>
+            <p>Extender la orden de compra para garantizar la continuidad de suministros y servicios críticos que sustentan la gestión administrativa del gabinete.</p>
+            <div class="meta">
+                <span class="tag">Jefatura de Gabinete de Ministros</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894877" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$306,000,000.00</div>
+            <p>Lanzar licitación pública para contratar la adquisición de insumos, equipos y servicios de salud, garantizando cobertura y calidad asistencial.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894889" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$290,000,000.00</div>
+            <p>Financiar el apoyo a instituciones que brindan integración escolar y rehabilitación a personas con discapacidad, cumpliendo la Ley Nacional 24.901.</p>
+            <div class="meta">
+                <span class="tag">Vicejefatura de Gobierno</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894701" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$225,000,000.00</div>
+            <p>Aplicar una multa a Autosuchin SRL para sancionar infracciones tributarias, recuperar recursos y disuadir conductas irregulares en el ámbito financiero.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Hacienda y Finanzas</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894882" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$224,754,412.97</div>
+            <p>Financiar acciones y programas del Consejo de Derechos de Niñas, Niños y Adolescentes para promover su protección, participación y desarrollo integral.</p>
+            <div class="meta">
+                <span class="tag">Consejo de los Derechos de Niñas, Niños y Adolescentes</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894864" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$224,754,412.97</div>
+            <p>Destinar recursos al Consejo de Derechos de Niñas, Niños y Adolescentes para ejecutar programas de protección, educación y participación infantil.$</p>
+            <div class="meta">
+                <span class="tag">Consejo de los Derechos de Niñas, Niños y Adolescentes</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894923" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$176,796,000.00</div>
+            <p>Renovar el contrato de mantenimiento de aires acondicionados y ventilación forzada para garantizar condiciones ambientales seguras y confortables en los edificios del MPF.</p>
+            <div class="meta">
+                <span class="tag">Ministerio Público Fiscal</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894965" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card expensive">
+            <div class="amount">$114,877,800.00</div>
+            <p>Adjudicar la licitación para la provisión anual de indumentaria, abasteciendo a programas sociales y garantizando vestimenta adecuada a la población vulnerable.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Desarrollo Humano y Hábitat</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4895042" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$75,991,439.00</div>
+            <p>Corregir y ajustar la asignación presupuestaria conjunta entre Hacienda y Cultura, garantizando la correcta financiación de proyectos y políticas culturales.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Hacienda y Finanzas - Ministerio de Cultura</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894873" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$69,414,946.20</div>
+            <p>Formalizar la declaración de fracaso de la licitación abreviada, permitiendo la reasignación de recursos y garantizar la transparencia del proceso.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Educación</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894893" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$45,000,000.00</div>
+            <p>Destinar una caja chica especial al Ministerio de Salud para cubrir gastos urgentes y menores, garantizando agilidad en la gestión de insumos y servicios.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894748" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$43,065,000.00</div>
+            <p>Ampliar la licitación pública N.º 22/25 para cubrir mayores requerimientos de bienes y servicios del Ministerio Público Fiscal, asegurando recursos adecuados.</p>
+            <div class="meta">
+                <span class="tag">Ministerio Público Fiscal</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894964" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$41,400,000.00</div>
+            <p>Financiar programas y adquisiciones del Ministerio de Salud para fortalecer la atención primaria, prevención y respuesta sanitaria en la Ciudad de Buenos Aires.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894739" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$29,072,000.00</div>
+            <p>Adquirir 316 vouchers de librería para facilitar la compra de materiales de oficina y escolares, apoyando la gestión administrativa y educativa municipal.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Hacienda y Finanzas  -  Lotería de la Ciudad de Buenos Aires S.A.U.</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4895024" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$19,390,000.00</div>
+            <p>Lanzar contratación menor para adquirir insumos y equipos médicos esenciales, garantizando la continuidad de la atención sanitaria en la Ciudad.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud-</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894937" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$18,445,915.00</div>
+            <p>Anular la contratación menor N.º 427‑2591‑CME24 para corregir irregularidades y reorientar recursos hacia necesidades sanitarias prioritarias.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud-</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894928" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$15,682,155.63</div>
+            <p>Imponer una multa a Aesa, Aseo y Ecología SA para sancionar incumplimientos, recuperar recursos y garantizar la calidad del servicio de higiene pública.</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894973" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$14,660,481.80</div>
+            <p>Aplicar una multa a Solbayres – IMPSA Ambiental SA para sancionar infracciones, recuperar recursos y asegurar la correcta gestión de servicios ambientales.</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894974" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$14,256,000.00</div>
+            <p>Imponer una multa a Emova Movilidad SA para sancionar incumplimientos, recuperar recursos y garantizar la adecuada prestación de servicios de movilidad urbana.</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894978" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$13,830,000.00</div>
+            <p>Lanzar contratación menor para adquirir insumos y equipos médicos esenciales, asegurando la continuidad y calidad de la atención sanitaria en la Ciudad.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud-</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894938" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$13,293,349.37</div>
+            <p>Adquirir guantes, cajas de archivo, cestillas, formaldehído y demás insumos para equipar hospitales y centros de salud, garantizando atención segura.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4895033" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$13,000,000.00</div>
+            <p>Otorgar un beneficio económico al Centro Integral Cadaqués SAS y al Arzobispado de Buenos Aires para financiar programas sociales y de atención comunitaria.</p>
+            <div class="meta">
+                <span class="tag">Vicejefatura de Gobierno</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894702" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$12,485,436.00</div>
+            <p>Financiar programas y adquisiciones del Ministerio de Salud para reforzar la atención primaria, prevención y respuesta sanitaria en la Ciudad de Buenos Aires.</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894747" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$12,250,000.00</div>
+            <p>Aprueba pliegos y llama a Licitación Pública N° 435-1190-LPU25</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894891" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$10,868,000.00</div>
+            <p>Aprueba pliegos y llama a Contratación Menor N° 420-0052-CME26</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud-</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894940" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$9,700,000.00</div>
+            <p>Aprueba y adjudica la Contratación Menor N° 9611-3730-CME25</p>
+            <div class="meta">
+                <span class="tag">Vicejefatura de Gobierno</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894875" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$9,372,028.18</div>
+            <p>Aprueba gasto</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894749" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$9,018,000.00</div>
+            <p>Sanciona con multa a la empresa Emova Movilidad SA</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894977" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$8,041,096.27</div>
+            <p>Convalida la ejecución de las tareas requeridas de la Licitación Pública N° 8503-0787-LPU18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894959" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$7,200,000.00</div>
+            <p>Servicio de monitoreo integral de noticias</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Seguridad</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4895027" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$5,758,951.00</div>
+            <p>Sanciona con multa a la empresa Mantelectric ICISA</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894980" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$3,465,000.00</div>
+            <p>Aprueba rendición de caja chica especial</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894740" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$3,443,628.04</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894953" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$3,435,000.00</div>
+            <p>Aprueba gasto</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894750" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$3,350,000.00</div>
+            <p>Aprueba y adjudica la Contratación Directa N° 434-1605-CDI25</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud-</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894933" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$2,180,525.53</div>
+            <p>Sanciona con multa a la empresa Cliba Ingeniería Urbana SA</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894966" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$1,455,320.00</div>
+            <p>Aprueba y adjudica la Contratación Menor N° 434-0047-CME25</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud-</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894934" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$1,306,800.00</div>
+            <p>Aprueba y adjudica la Contratación Menor N° 427-1207-CME24</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud-</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894924" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$947,538.28</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894955" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$916,280.11</div>
+            <p>Sanciona con multa a la empresa Solbayres - IMPSA Ambiental SA</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894983" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$843,974.30</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894941" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$828,891.95</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894942" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$647,882.07</div>
+            <p>Sanciona con multa a la empresa Mantelectric ICISA</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894975" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$645,794.95</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894952" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$540,643.64</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894958" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$390,677.34</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894956" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$363,210.00</div>
+            <p>Aprueba devolución de suma por pago realizado a favor de Leandro Federico Meiners</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894919" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$363,210.00</div>
+            <p>Aprueba devolución de suma por pago realizado a favor de Jesús David Torres Vílchez</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894920" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$240,000.00</div>
+            <p>Rescinde la Orden de Compra N° 419-19880-OC25</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud-</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894935" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$223,652.71</div>
+            <p>Sanciona con multa a la empresa Ashira SA - Martin y Martin SA UTE</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894970" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$223,652.71</div>
+            <p>Sanciona con multa a la empresa Ashira SA - Martin y Martin SA UTE</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894985" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$222,815.81</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894957" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$220,000.00</div>
+            <p>Actualiza el monto del subsidio mensual del Programa de Apoyo para la Vida Independiente para las Personas con Discapacidad</p>
+            <div class="meta">
+                <span class="tag">Vicejefatura de Gobierno</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894713" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$206,310.00</div>
+            <p>Sanciona con multa a la empresa Emova Movilidad SA</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894979" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$200,968.35</div>
+            <p>Sanciona con multa a la empresa Aesa, Aseo y Ecología SA</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894969" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$200,000.00</div>
+            <p>Aprueba gastos de movilidad</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Hacienda y Finanzas</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894878" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$141,788.61</div>
+            <p>Sanciona con multa a la empresa Urbasur - Transportes Olivos SACI y F - Urbaser Argentina SA UTE</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894984" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$135,236.62</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894954" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$128,865.00</div>
+            <p>Aprueba y adjudica la Contratación Menor N° 410-4170-CME25</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud-</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894936" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$128,655.22</div>
+            <p>Sanciona con multa a la empresa Solbayres - IMPSA Ambiental SA</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894981" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$119,723.30</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894951" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$100,000.00</div>
+            <p>Acepta la donación a favor del Museo de Bellas Artes Benito Quinquela Martín efectuada por Elsa Elena Espeleta</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Hacienda y Finanzas - Ministerio de Educación</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894874" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$90,800.00</div>
+            <p>Aprueba devolución de suma por pago realizado a favor de Limay Uribe Ruberti</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894921" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$90,800.00</div>
+            <p>Aprueba devolución de suma por pago realizado a favor de Judith Braver</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894922" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$87,607.99</div>
+            <p>Aprueba gasto en el marco de la Licitación Pública N° 297-SIGAF/18</p>
+            <div class="meta">
+                <span class="tag">Secretaría de Gobierno y Vínculo Ciudadano</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894943" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$62,077.41</div>
+            <p>Sanciona con multa a la empresa Ashira SA - Martin y Martin SA UTE</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894982" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$53,554.39</div>
+            <p>Sanciona con multa a la empresa Níttida - Ecohábitat SA y otra UTE</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894967" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$53,554.39</div>
+            <p>Sanciona con multa a la empresa Níttida - Ecohábitat SA y otra UTE</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894968" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$31,013.56</div>
+            <p>Sanciona con multa a la empresa Ashira SA - Martin y Martin SA UTE</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894971" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$31,013.56</div>
+            <p>Sanciona con multa a la empresa Ashira SA - Martin y Martin SA UTE</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894972" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$31,013.56</div>
+            <p>Sanciona con multa a la empresa Ashira SA - Martin y Martin SA UTE</p>
+            <div class="meta">
+                <span class="tag">Ente Único Regulador de los Servicios Públicos de la Ciudad Autónoma de Buenos Aires</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894976" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$450.00</div>
+            <p>Aprueba pliegos y llama a Licitación Publica N° 427-0045-LPU26</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Salud-</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894939" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="amount">$3.78</div>
+            <p>Aprueba gasto</p>
+            <div class="meta">
+                <span class="tag">Ministerio de Cultura</span>
+                <a href="http://api-restboletinoficial.buenosaires.gob.ar/download/4894855" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+
+    </div>
+    <div style="text-align: center; margin-top: 30px; color: #888;">
+        Generado automáticamente con IA por <a href="https://github.com/ignaciokairuz/Boletin_Oficial_AI">Boletin_Oficial_AI</a>
+    </div>
+</body>
+</html>
