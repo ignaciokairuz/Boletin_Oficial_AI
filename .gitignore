@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.manifest
+*.spec
+
+# Downloads and Data
+*.pdf
+*.zip
+*.rar
+*.csv
+*.json
+!requirements.txt
+!field_config.json
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# App Specific / System Folders
+AppData/
+.gemini/
+.vscode/
+.idea/
+.git/
