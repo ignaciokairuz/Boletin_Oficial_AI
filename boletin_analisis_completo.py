@@ -167,6 +167,60 @@ Texto: {g.get('text_snippet', '')[:400]}"""
     
     with open('reporte_gastos_final.md', 'w', encoding='utf-8') as f:
         f.write(md)
+
+    # Generar versión HTML para la web
+    print("🌍 Generando index.html...")
+    html = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Gastos Públicos</title>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }}
+        .header {{ background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+        .card {{ background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 5px solid #2196F3; }}
+        .card.expensive {{ border-left-color: #f44336; }}
+        .amount {{ font-size: 1.2em; font-weight: bold; color: #333; }}
+        .date {{ color: #666; font-size: 0.9em; }}
+        .tag {{ background: #eee; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; }}
+        a.btn {{ display: inline-block; background: #2196F3; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; margin-top: 5px; }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Monitor de Gastos Públicos</h1>
+        <p><strong>Boletín Oficial N° {numero}</strong> | Fecha: {fecha}</p>
+        <p>Analizadas {len(all_norms)} normas | Detectados {len(gastos)} gastos</p>
+    </div>
+
+    <div class="feed">
+"""
+    for g in gastos:
+        is_expensive = g['monto'] > 100_000_000  # Marcar rojos > 100M
+        css_class = "expensive" if is_expensive else "normal"
+        desc = g.get('resumen_ia', g.get('sumario', ''))
+        
+        html += f"""
+        <div class="card {css_class}">
+            <div class="amount">{g['monto_fmt']}</div>
+            <p>{desc}</p>
+            <div class="meta">
+                <span class="tag">{g['organismo']}</span>
+                <a href="{g['url']}" target="_blank" class="btn">Ver PDF</a>
+            </div>
+        </div>
+"""
+    html += """
+    </div>
+    <div style="text-align: center; margin-top: 30px; color: #888;">
+        Generado automáticamente con IA por <a href="https://github.com/ignaciokairuz/Boletin_Oficial_AI">Boletin_Oficial_AI</a>
+    </div>
+</body>
+</html>"""
+
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(html)
     
     print(f"\n" + "="*60)
     print(f"📊 RESUMEN - Boletín N° {numero} ({fecha})")

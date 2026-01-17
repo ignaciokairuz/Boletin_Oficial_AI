@@ -33,6 +33,6 @@ jobs:
         run: |
           git config --global user.name 'Bot de Gastos'
           git config --global user.email 'bot@noreply.github.com'
-          git add reporte_gastos_final.md gastos_completos.json
+          git add reporte_gastos_final.md gastos_completos.json index.html
           git commit -m "📊 Reporte diario actualizado $(date +'%Y-%m-%d')" || exit 0
           git push
