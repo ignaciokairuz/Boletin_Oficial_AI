@@ -13,6 +13,7 @@ __pycache__/
 *.json
 !requirements.txt
 !field_config.json
+!gastos_completos.json
 
 # Environment
 .env
