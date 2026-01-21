@@ -2,8 +2,11 @@ name: Análisis Diario de Gastos
 
 on:
   schedule:
-    # Ejecutar a las 15:30 UTC (12:30 PM Argentina) de Lunes a Viernes
-    - cron: '30 15 * * 1-5'
+    # 4 ejecuciones de respaldo (Lunes a Viernes)
+    - cron: '30 15 * * 1-5'  # 12:30 PM Argentina
+    - cron: '30 16 * * 1-5'  # 13:30 PM Argentina
+    - cron: '30 17 * * 1-5'  # 14:30 PM Argentina
+    - cron: '30 18 * * 1-5'  # 15:30 PM Argentina
   workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub
 
 jobs:
@@ -33,6 +36,6 @@ jobs:
         run: |
           git config --global user.name 'Bot de Gastos'
           git config --global user.email 'bot@noreply.github.com'
-          git add reporte_gastos_final.md gastos_completos.json index.html
+          git add datos/ index.html
           git commit -m "📊 Reporte diario actualizado $(date +'%Y-%m-%d')" || exit 0
           git push
