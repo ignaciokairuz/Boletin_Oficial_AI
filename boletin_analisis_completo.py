@@ -115,7 +115,7 @@ def main():
         print(f"[{i+1}/{len(all_norms)}] {item['nombre'][:50]}...", end="", flush=True)
         
         try:
-            r = requests.get(item['url'], timeout=15)
+            r = requests.get(item['url'], timeout=120)
             if r.status_code != 200:
                 print(" ❌ HTTP error")
                 errores += 1
