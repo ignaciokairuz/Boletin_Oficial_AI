@@ -2,7 +2,8 @@ name: Análisis Diario de Gastos
 
 on:
   schedule:
-    # 4 ejecuciones de respaldo (Lunes a Viernes)
+    # 5 ejecuciones de respaldo (Lunes a Viernes)
+    - cron: '30 14 * * 1-5'  # 11:30 AM Argentina
     - cron: '30 15 * * 1-5'  # 12:30 PM Argentina
     - cron: '30 16 * * 1-5'  # 13:30 PM Argentina
     - cron: '30 17 * * 1-5'  # 14:30 PM Argentina
