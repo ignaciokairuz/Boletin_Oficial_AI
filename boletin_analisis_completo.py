@@ -585,7 +585,7 @@ def regenerate_html():
             document.getElementById('gastosGrid').innerHTML = d.gastos.map(g => {{
                 const expensive = g.monto > 100000000 ? 'expensive' : '';
                 const anexos = g.anexos && g.anexos.length ? 
-                    '<div class="anexos-list">📎 ' + g.anexos.map(a => `<span class="anexo-link" onclick="goToAnexo('${a.nombre.replace(/[.-]/g,'_')}')">${a.nombre.substring(0,20)}</span>`).join('') + '</div>' : '';
+                    '<div class="anexos-list">📎 ' + g.anexos.map(a => `<span class="anexo-link" onclick="goToAnexo('${{a.nombre.replace(/[.-]/g,'_')}}')">${{a.nombre.substring(0,20)}}</span>`).join('') + '</div>' : '';
                 return `<div class="card ${expensive}" data-organismo="${g.organismo || ''}">
                     <div class="amount">${g.monto_fmt || '$0'}</div>
                     <div class="desc"><strong>${g.resumen_corto || g.sumario || ''}</strong></div>
