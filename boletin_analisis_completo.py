@@ -1,12 +1,14 @@
 """
-Boletín Oficial - Análisis COMPLETO de Gastos v6
+Boletín Oficial - Análisis COMPLETO de Gastos v7
 -------------------------------------------------
 Features:
 - Reintentos inteligentes
-- Resumen corto + detallado por gasto
+- Resumen corto (estilo título) + detallado (contexto)
 - Resúmenes de todos los anexos
 - Filtro por ministerio, gráfico stacked chart
 - TAB LICITACIONES: scraping de Buenos Aires Compras
+- Corrección: Nombres de organismos limpios
+- Corrección: Tabs funcionan correctamente al cambiar fecha
 """
 import requests
 import json
@@ -31,6 +33,12 @@ API_URL = "https://api-restboletinoficial.buenosaires.gob.ar/obtenerBoletin/0/tr
 BAC_URL = "https://www.buenosairescompras.gob.ar/ListarAperturaUltimos30Dias.aspx"
 AMOUNT_REGEX = r'\$\s?(\d{1,3}(?:\.\d{3})*(?:,\d{1,2})?)'
 DATA_DIR = "datos"
+
+def clean_organismo(org):
+    if not org: return "Otros"
+    # Remove trailing dashes, spaces, and common bad suffixes
+    org = org.strip().rstrip('-').rstrip().strip()
+    return org
 
 def extract_amounts(text):
     if not text: return []
@@ -102,7 +110,7 @@ def scrape_licitaciones(fecha_hoy):
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         driver.get(BAC_URL)
         
-        # Wait for table to load - CORRECTED SELECTOR
+        # Wait for table to load
         WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "ctl00_CPH1_GridListaPliegos"))
         )
@@ -238,6 +246,8 @@ def main():
         for i, item in enumerate(pendientes):
             print(f"[{i+1}/{len(pendientes)}] {item['nombre'][:40]}...", end="", flush=True)
             success, processed_item, error = process_norm(item)
+            processed_item['organismo'] = clean_organismo(processed_item.get('organismo', ''))
+            
             if success:
                 if processed_item.get('tiene_gasto'):
                     nuevos_gastos.append(processed_item)
@@ -253,6 +263,9 @@ def main():
         existing_data['gastos'].extend(nuevos_gastos)
         existing_data['sin_gastos'].extend(nuevos_sin_gastos)
         existing_data['gastos'].sort(key=lambda x: x.get('monto', 0), reverse=True)
+        
+        # Clean existing data organismes too
+        for g in existing_data['gastos']: g['organismo'] = clean_organismo(g.get('organismo'))
         
         with open(data_file, 'w', encoding='utf-8') as f:
             json.dump(existing_data, f, indent=2, ensure_ascii=False)
@@ -275,6 +288,9 @@ def main():
         for poder, tipos in normas_root.items():
             for tipo, organismos in tipos.items():
                 for organismo, lista in organismos.items():
+                    # Clean organisme name immediately
+                    organismo_cleaned = clean_organismo(organismo)
+                    
                     for item in lista:
                         anexos = [{'nombre': a.get('nombre_anexo', ''), 'url': a.get('filenet_firmado', '')} for a in item.get('anexos', [])]
                         all_norms.append({
@@ -282,7 +298,7 @@ def main():
                             'sumario': item.get('sumario'),
                             'url': item.get('url_norma'),
                             'tipo': tipo,
-                            'organismo': organismo,
+                            'organismo': organismo_cleaned,
                             'anexos': anexos
                         })
         
@@ -316,9 +332,10 @@ def main():
         try:
             client = Client("amd/gpt-oss-120b-chatbot")
             
-            CORTO = "Explica en 1 oración de 15-25 palabras el propósito del gasto. Solo la oración."
-            LARGO = "Explica en 4 oraciones simples: qué se compra, para qué, quién lo ejecuta, y el monto. Lenguaje ciudadano."
-            LIC_PROMPT = "Explica en 2 oraciones simples qué se está licitando y para qué sirve. Lenguaje ciudadano."
+            # Prompts actualizados para ser más distintos
+            CORTO = "Genera un TITULO MUY BREVE (máximo 12 palabras) que resuma QUÉ se compra. Estilo telegráfico. Ejemplo: 'Compra de insumos hospitalarios'"
+            LARGO = "Explica en 3-4 oraciones claras el contexto: para qué se usa, quién lo pide y por qué es importante. No repitas el título."
+            LIC_PROMPT = "Resume en 2 oraciones qué se licita."
             
             for i, g in enumerate(gastos[:50]):
                 print(f"  [Gasto {i+1}/50]", end=" ", flush=True)
@@ -345,7 +362,7 @@ def main():
                 for anexo in norm.get('anexos', []):
                     texto = process_anexo(anexo)
                     if texto:
-                        anexo['resumen'] = get_ai_summary(client, f"Anexo: {anexo['nombre']}\n{texto}", "Resume en 2 oraciones qué contiene este anexo.")
+                        anexo['resumen'] = get_ai_summary(client, f"Anexo: {anexo['nombre']}\n{texto}", "Resume brevemente el anexo.")
                     else:
                         anexo['resumen'] = ""
                         
@@ -394,7 +411,11 @@ def regenerate_html():
     all_data = {}
     for date in dates:
         with open(os.path.join(DATA_DIR, f"{date}.json"), 'r', encoding='utf-8') as f:
-            all_data[date] = json.load(f)
+            data = json.load(f)
+            # Re-clean Organismos in case of old data
+            data['organismos'] = sorted(set(clean_organismo(org) for org in data.get('organismos', [])))
+            for g in data.get('gastos', []): g['organismo'] = clean_organismo(g.get('organismo'))
+            all_data[date] = data
     
     latest = all_data[dates[0]]
     
@@ -477,23 +498,13 @@ def regenerate_html():
             <h2>🔍 Monitor</h2>
             <div class="sidebar-section">
                 <h3>📅 Fecha</h3>
-                <ul class="date-list" id="dateList">
-'''
-    
-    for i, date in enumerate(dates):
-        d = all_data[date]
-        active = "active" if i == 0 else ""
-        html += f'                    <li class="{active}" onclick="loadDate(\'{date}\')">{d["fecha_display"]}</li>\n'
-    
-    licitaciones_count = len(latest.get('licitaciones', []))
-    
-    html += f'''                </ul>
+                <ul class="date-list" id="dateList"></ul>
             </div>
             <div class="sidebar-section">
                 <h3>📋 Vista</h3>
                 <ul class="tab-list">
                     <li class="active" onclick="showTab('gastos')">💰 Gastos</li>
-                    <li onclick="showTab('licitaciones')">🏛️ Licitaciones ({licitaciones_count})</li>
+                    <li onclick="showTab('licitaciones')">🏛️ Licitaciones</li>
                     <li onclick="showTab('otros')">📄 Otras Normas</li>
                     <li onclick="showTab('anexos')">📎 Anexos</li>
                     <li onclick="showTab('stats')">📊 Estadísticas</li>
@@ -505,110 +516,22 @@ def regenerate_html():
         </aside>
         <main class="main" id="main">
             <div class="header">
-                <h1>Boletín N° <span id="numBoletin">{latest['numero_boletin']}</span></h1>
-                <p>Fecha: <span id="fechaDisplay">{latest['fecha_display']}</span></p>
+                <h1>Boletín N° <span id="numBoletin">-</span></h1>
+                <p>Fecha: <span id="fechaDisplay">-</span></p>
                 <div class="header-controls">
-                    <select class="filter-select" id="filterOrganismo" onchange="filterByOrganismo()">
-                        <option value="">🏛️ Todos los organismos</option>
-'''
-    
-    for org in all_organismos:
-        html += f'                        <option value="{org}">{org[:40]}</option>\n'
-    
-    html += f'''                    </select>
+                    <select class="filter-select" id="filterOrganismo" onchange="filterByOrganismo()"></select>
                     <div class="stats">
-                        <div class="stat"><div class="stat-value" id="statGastos">{len(latest['gastos'])}</div><div class="stat-label">Gastos</div></div>
-                        <div class="stat"><div class="stat-value" id="statLic">{licitaciones_count}</div><div class="stat-label">Licitaciones</div></div>
-                        <div class="stat"><div class="stat-value" id="statAnexos">{latest.get('total_anexos', 0)}</div><div class="stat-label">Anexos</div></div>
+                        <div class="stat"><div class="stat-value" id="statGastos">-</div><div class="stat-label">Gastos</div></div>
+                        <div class="stat"><div class="stat-value" id="statLic">-</div><div class="stat-label">Licitaciones</div></div>
+                        <div class="stat"><div class="stat-value" id="statAnexos">-</div><div class="stat-label">Anexos</div></div>
                     </div>
                 </div>
             </div>
             
-            <div class="tab-content active" id="tab-gastos">
-                <div class="card-grid" id="gastosGrid">
-'''
-    
-    for g in latest['gastos']:
-        expensive = "expensive" if g.get('monto', 0) > 100_000_000 else ""
-        anexos_html = ""
-        if g.get('anexos'):
-            anexos_html = '<div class="anexos-list">📎 ' + ''.join([f'<span class="anexo-link" onclick="goToAnexo(\'{a["nombre"].replace(".", "_").replace("-", "_")}\')">{a["nombre"][:20]}</span>' for a in g['anexos']]) + '</div>'
-        
-        html += f'''                    <div class="card {expensive}" data-organismo="{g.get('organismo', '')}">
-                        <div class="amount">{g.get('monto_fmt', '$0')}</div>
-                        <div class="desc">{g.get('resumen_corto', g.get('sumario', ''))}</div>
-                        <div class="desc-long">{g.get('resumen_largo', '')}</div>
-                        <div class="meta">
-                            <span class="tag">{g.get('organismo', '')[:30]}</span>
-                            <button class="btn secondary" onclick="this.closest('.card').classList.toggle('expanded')">Ver más</button>
-                            <a href="{g.get('url', '#')}" target="_blank" class="btn">PDF</a>
-                        </div>
-                        {anexos_html}
-                    </div>
-'''
-    
-    # Licitaciones tab
-    html += '''                </div>
-            </div>
-            
-            <div class="tab-content" id="tab-licitaciones">
-                <div class="card-grid" id="licitacionesGrid">
-'''
-    
-    for lic in latest.get('licitaciones', []):
-        monto_fmt = lic.get('monto_fmt', 'Monto no disponible')
-        html += f'''                    <div class="card">
-                        <div class="amount">{monto_fmt}</div>
-                        <div class="desc"><strong>{lic.get('numero', '')}</strong> - {lic.get('nombre', '')}</div>
-                        <div class="desc">{lic.get('resumen_ia', '')}</div>
-                        <div class="meta">
-                            <span class="tag">{lic.get('tipo', '')}</span>
-                            <span class="tag">{lic.get('unidad', '')[:25]}</span>
-                            <a href="{lic.get('url', '#')}" target="_blank" class="btn">Ver en BAC</a>
-                        </div>
-                    </div>
-'''
-    
-    # Other tabs (simplified for length)
-    html += '''                </div>
-            </div>
-            
-            <div class="tab-content" id="tab-otros">
-                <div class="card-grid" id="otrosGrid">
-'''
-    
-    for s in latest.get('sin_gastos', []):
-        html += f'''                    <div class="card">
-                        <div class="desc"><strong>{s.get('nombre', '')}</strong></div>
-                        <div class="desc">{s.get('resumen_corto', s.get('sumario', ''))}</div>
-                        <div class="meta">
-                            <span class="tag">{s.get('organismo', '')[:30]}</span>
-                            <a href="{s.get('url', '#')}" target="_blank" class="btn">PDF</a>
-                        </div>
-                    </div>
-'''
-    
-    html += '''                </div>
-            </div>
-            
-            <div class="tab-content" id="tab-anexos">
-                <div class="card-grid" id="anexosGrid">
-'''
-    
-    for norm in latest['gastos'] + latest.get('sin_gastos', []):
-        for anx in norm.get('anexos', []):
-            aid = anx['nombre'].replace('.', '_').replace('-', '_')
-            html += f'''                    <div class="card" id="anexo_{aid}">
-                        <div class="desc"><strong>📄 {anx['nombre']}</strong></div>
-                        <div class="desc">De: {norm.get('nombre', '')}</div>
-                        <div class="desc">{anx.get('resumen', '')}</div>
-                        <a href="{anx.get('url', '#')}" target="_blank" class="btn">Descargar</a>
-                    </div>
-'''
-    
-    html += f'''                </div>
-            </div>
-            
+            <div class="tab-content active" id="tab-gastos"><div class="card-grid" id="gastosGrid"></div></div>
+            <div class="tab-content" id="tab-licitaciones"><div class="card-grid" id="licitacionesGrid"></div></div>
+            <div class="tab-content" id="tab-otros"><div class="card-grid" id="otrosGrid"></div></div>
+            <div class="tab-content" id="tab-anexos"><div class="card-grid" id="anexosGrid"></div></div>
             <div class="tab-content" id="tab-stats">
                 <div class="chart-container">
                     <div class="chart-toggle">
@@ -619,15 +542,116 @@ def regenerate_html():
                 </div>
             </div>
             
-            <div class="footer">
-                <a href="https://github.com/ignaciokairuz/Boletin_Oficial_AI">Boletin_Oficial_AI</a>
-            </div>
+            <div class="footer"><a href="https://github.com/ignaciokairuz/Boletin_Oficial_AI">Boletin_Oficial_AI</a></div>
         </main>
     </div>
     
     <script>
         const allData = {json.dumps(all_data, ensure_ascii=False)};
+        const sortedDates = Object.keys(allData).sort().reverse();
         let currentChart = null, chartMode = 'count';
+        
+        function init() {{
+            const dateList = document.getElementById('dateList');
+            sortedDates.forEach((date, i) => {{
+                const li = document.createElement('li');
+                li.textContent = allData[date].fecha_display;
+                if (i===0) li.classList.add('active');
+                li.onclick = (e) => loadDate(date, e.target);
+                dateList.appendChild(li);
+            }});
+            
+            // Populate filter
+            const filter = document.getElementById('filterOrganismo');
+            filter.innerHTML = '<option value="">🏛️ Todos los organismos</option>';
+            const orgs = new Set();
+            Object.values(allData).forEach(d => d.organismos.forEach(o => orgs.add(o)));
+            Array.from(orgs).sort().forEach(o => {{
+                const opt = document.createElement('option');
+                opt.value = o; opt.textContent = o.substring(0,40);
+                filter.appendChild(opt);
+            }});
+
+            if(sortedDates.length > 0) loadDate(sortedDates[0]);
+        }}
+
+        function loadDate(date, targetLi) {{
+            const d = allData[date];
+            if (!d) return;
+
+            if (targetLi) {{
+                document.querySelectorAll('.date-list li').forEach(li => li.classList.remove('active'));
+                targetLi.classList.add('active');
+            }}
+
+            document.getElementById('numBoletin').textContent = d.numero_boletin;
+            document.getElementById('fechaDisplay').textContent = d.fecha_display;
+            document.getElementById('statGastos').textContent = d.gastos.length;
+            document.getElementById('statLic').textContent = (d.licitaciones || []).length;
+            document.getElementById('statAnexos').textContent = d.total_anexos || 0;
+
+            // Render Gastos
+            document.getElementById('gastosGrid').innerHTML = d.gastos.map(g => {{
+                const expensive = g.monto > 100000000 ? 'expensive' : '';
+                const anexos = g.anexos && g.anexos.length ? 
+                    '<div class="anexos-list">📎 ' + g.anexos.map(a => `<span class="anexo-link" onclick="goToAnexo('${a.nombre.replace(/[.-]/g,'_')}')">${a.nombre.substring(0,20)}</span>`).join('') + '</div>' : '';
+                return `<div class="card ${expensive}" data-organismo="${g.organismo || ''}">
+                    <div class="amount">${g.monto_fmt || '$0'}</div>
+                    <div class="desc"><strong>${g.resumen_corto || g.sumario || ''}</strong></div>
+                    <div class="desc-long">${g.resumen_largo || ''}</div>
+                    <div class="meta">
+                        <span class="tag">${(g.organismo || '').substring(0,30)}</span>
+                        <button class="btn secondary" onclick="this.closest('.card').classList.toggle('expanded')">Ver más</button>
+                        <a href="${g.url || '#'}" target="_blank" class="btn">PDF</a>
+                    </div>
+                    ${anexos}
+                </div>`;
+            }}).join('');
+
+            // Render Licitaciones
+            document.getElementById('licitacionesGrid').innerHTML = (d.licitaciones || []).map(l => {{
+                return `<div class="card">
+                    <div class="amount">${l.monto_fmt || 'Monto no disponible'}</div>
+                    <div class="desc"><strong>${l.numero || ''}</strong> - ${l.nombre || ''}</div>
+                    <div class="desc">${l.resumen_ia || ''}</div>
+                    <div class="meta">
+                        <span class="tag">${l.tipo || ''}</span>
+                        <span class="tag">${(l.unidad || '').substring(0,25)}</span>
+                        <a href="${l.url || '#'}" target="_blank" class="btn">Ver en BAC</a>
+                    </div>
+                </div>`;
+            }}).join('');
+
+            // Render Otros
+            document.getElementById('otrosGrid').innerHTML = (d.sin_gastos || []).map(s => {{
+                return `<div class="card">
+                    <div class="desc"><strong>${s.nombre || ''}</strong></div>
+                    <div class="desc">${s.resumen_corto || s.sumario || ''}</div>
+                    <div class="meta">
+                        <span class="tag">${(s.organismo || '').substring(0,30)}</span>
+                        <a href="${s.url || '#'}" target="_blank" class="btn">PDF</a>
+                    </div>
+                </div>`;
+            }}).join('');
+
+            // Render Anexos
+            const allNorms = [...d.gastos, ...(d.sin_gastos || [])];
+            let anexosHtml = '';
+            allNorms.forEach(n => {{
+                (n.anexos || []).forEach(a => {{
+                    const aid = a.nombre.replace(/[.-]/g,'_');
+                    anexosHtml += `<div class="card" id="anexo_${aid}">
+                        <div class="desc"><strong>📄 ${a.nombre}</strong></div>
+                        <div class="desc">De: ${n.nombre || ''}</div>
+                        <div class="desc">${a.resumen || ''}</div>
+                        <a href="${a.url || '#'}" target="_blank" class="btn">Descargar</a>
+                    </div>`;
+                }});
+            }});
+            document.getElementById('anexosGrid').innerHTML = anexosHtml;
+
+            if (document.getElementById('tab-stats').classList.contains('active')) initChart();
+        }}
         
         function toggleTheme() {{ document.body.classList.toggle('light-mode'); localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }}
         if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
@@ -648,23 +672,12 @@ def regenerate_html():
         
         function goToAnexo(id) {{
             showTab('anexos');
-            document.querySelectorAll('.tab-list li')[3].classList.add('active');
             setTimeout(() => {{ const el = document.getElementById('anexo_' + id); if (el) el.scrollIntoView({{ behavior: 'smooth' }}); }}, 100);
         }}
         
         function filterByOrganismo() {{
             const f = document.getElementById('filterOrganismo').value.toLowerCase();
             document.querySelectorAll('.card').forEach(c => {{ c.style.display = (!f || (c.dataset.organismo || '').toLowerCase().includes(f)) ? 'block' : 'none'; }});
-        }}
-        
-        function loadDate(date) {{
-            const d = allData[date]; if (!d) return;
-            document.getElementById('numBoletin').textContent = d.numero_boletin;
-            document.getElementById('fechaDisplay').textContent = d.fecha_display;
-            document.getElementById('statGastos').textContent = d.gastos.length;
-            document.getElementById('statLic').textContent = (d.licitaciones || []).length;
-            document.querySelectorAll('.date-list li').forEach(li => li.classList.remove('active'));
-            event.target.classList.add('active');
         }}
         
         function initChart() {{
@@ -683,7 +696,7 @@ def regenerate_html():
                 backgroundColor: colors[i]
             }}));
             if (currentChart) currentChart.destroy();
-            currentChart = new Chart(ctx, {{ type: 'bar', data: {{ labels: dates, datasets }}, options: {{ responsive: true, scales: {{ x: {{ stacked: true }}, y: {{ stacked: true }} }} }} }});
+            currentChart = new Chart(ctx, {{ type: 'bar', data: {{ labels: dates.map(d => allData[d].fecha_display), datasets }}, options: {{ responsive: true, scales: {{ x: {{ stacked: true }}, y: {{ stacked: true }} }} }} }});
         }}
         
         function updateChart(mode) {{
@@ -692,6 +705,8 @@ def regenerate_html():
             event.target.classList.add('active');
             initChart();
         }}
+        
+        init();
     </script>
 </body>
 </html>'''
