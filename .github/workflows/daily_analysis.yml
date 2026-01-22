@@ -41,10 +41,20 @@ jobs:
         run: |
           python boletin_analisis_completo.py
 
+      - name: Upload debug screenshots if any
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-screenshots
+          path: '*.png'
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Guardar cambios
         run: |
           git config --global user.name 'Bot de Gastos'
           git config --global user.email 'bot@noreply.github.com'
-          git add datos/ index.html
+          git add datos/ index.html *.png 2>/dev/null || true
           git commit -m "📊 Reporte diario actualizado $(date +'%Y-%m-%d')" || exit 0
           git push
+

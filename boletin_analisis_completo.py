@@ -120,10 +120,11 @@ def process_anexo(anexo):
         return None
 
 def scrape_licitaciones(fecha_hoy):
-    """Scrape Buenos Aires Compras."""
+    """Scrape Buenos Aires Compras - handles session redirect."""
     print(f"\n🏛️ Scrapeando licitaciones de {fecha_hoy}...")
     licitaciones = []
     success = True
+    driver = None
     
     try:
         options = Options()
@@ -135,9 +136,24 @@ def scrape_licitaciones(fecha_hoy):
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
         
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-        driver.get(BAC_URL)
         
-        print(f"   Título página: {driver.title}")
+        # FIX: Visit homepage first to establish session (prevents redirect)
+        print("   Estableciendo sesión...")
+        driver.get("https://www.buenosairescompras.gob.ar/")
+        time.sleep(3)
+        
+        # Now navigate to tenders page
+        driver.get(BAC_URL)
+        time.sleep(2)
+        
+        print(f"   Título: {driver.title}")
+        print(f"   URL: {driver.current_url}")
+        
+        # Verify we're on the right page (not redirected)
+        if "ListarAperturaUltimos30Dias" not in driver.current_url:
+            print("   ⚠️ Redirigido! Reintentando...")
+            driver.get(BAC_URL)
+            time.sleep(3)
         
         try:
             WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, "ctl00_CPH1_GridListaPliegos")))
@@ -147,7 +163,7 @@ def scrape_licitaciones(fecha_hoy):
             driver.quit()
             return [], False
             
-        time.sleep(3)
+        time.sleep(2)
         
         table = driver.find_element(By.ID, "ctl00_CPH1_GridListaPliegos")
         rows = table.find_elements(By.TAG_NAME, "tr")[1:]
