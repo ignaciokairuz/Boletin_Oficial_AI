@@ -102,15 +102,16 @@ def scrape_licitaciones(fecha_hoy):
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         driver.get(BAC_URL)
         
-        # Wait for table to load
+        # Wait for table to load - CORRECTED SELECTOR
         WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "table.grilla tbody tr"))
+            EC.presence_of_element_located((By.ID, "ctl00_CPH1_GridListaPliegos"))
         )
         
-        time.sleep(2)
+        time.sleep(3)
         
-        # Get all rows
-        rows = driver.find_elements(By.CSS_SELECTOR, "table.grilla tbody tr")
+        # Get all rows from the correct table
+        table = driver.find_element(By.ID, "ctl00_CPH1_GridListaPliegos")
+        rows = table.find_elements(By.TAG_NAME, "tr")[1:]  # Skip header row
         print(f"   Encontradas {len(rows)} licitaciones en la página")
         
         # Parse today's date format (dd/mm/yyyy)
@@ -132,51 +133,66 @@ def scrape_licitaciones(fecha_hoy):
                     estado = cols[4].text.strip()
                     unidad = cols[5].text.strip()
                     
-                    # Get link to detail page
-                    link_elem = cols[0].find_element(By.TAG_NAME, "a")
-                    detail_url = link_elem.get_attribute("href")
+                    # Get link to detail page via JavaScript click
+                    link_id = cols[0].find_element(By.TAG_NAME, "a").get_attribute("id")
                     
                     licitaciones.append({
                         'numero': numero,
                         'nombre': nombre,
                         'tipo': tipo,
-                        'fecha': fecha_apertura.split()[0],  # Just the date
+                        'fecha': fecha_apertura.split()[0],
                         'estado': estado,
                         'unidad': unidad,
-                        'url': detail_url
+                        'link_id': link_id,
+                        'url': f"https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id={numero}"
                     })
                     print(f"   ✓ {numero}: {nombre[:40]}...")
                     
             except Exception as e:
                 continue
         
-        # Get amounts from detail pages (top 20 to save time)
-        print(f"\n📊 Extrayendo montos de {min(len(licitaciones), 20)} licitaciones...")
+        print(f"\n   Total licitaciones de hoy: {len(licitaciones)}")
         
-        for i, lic in enumerate(licitaciones[:20]):
-            try:
-                driver.get(lic['url'])
-                time.sleep(2)
-                
-                # Look for amount in page
-                page_text = driver.find_element(By.TAG_NAME, "body").text
-                
-                # Find amount patterns
-                monto_match = re.search(r'Monto.*?(\$\s?[\d.,]+)', page_text, re.IGNORECASE)
-                if monto_match:
-                    monto_str = monto_match.group(1)
-                    amounts = extract_amounts(monto_str)
-                    if amounts:
-                        lic['monto'] = amounts[0]
-                        lic['monto_fmt'] = f"${lic['monto']:,.2f}"
-                
-                # Get description for AI summary
-                lic['descripcion'] = page_text[:500]
-                
-                print(f"   [{i+1}/{min(len(licitaciones), 20)}] {lic['numero']}: {lic.get('monto_fmt', 'Sin monto')}")
-                
-            except Exception as e:
-                print(f"   [{i+1}] Error: {str(e)[:30]}")
+        # Get amounts from detail pages (top 20)
+        if licitaciones:
+            print(f"📊 Extrayendo montos de {min(len(licitaciones), 20)} licitaciones...")
+            
+            for i, lic in enumerate(licitaciones[:20]):
+                try:
+                    # Click the link to navigate to detail
+                    link = driver.find_element(By.ID, lic['link_id'])
+                    driver.execute_script("arguments[0].click();", link)
+                    time.sleep(2)
+                    
+                    # Look for Monto label and get its sibling value
+                    try:
+                        monto_labels = driver.find_elements(By.TAG_NAME, "label")
+                        for label in monto_labels:
+                            if label.text.strip() == "Monto":
+                                value_elem = driver.execute_script("return arguments[0].nextElementSibling;", label)
+                                if value_elem:
+                                    monto_text = value_elem.text.strip()
+                                    amounts = extract_amounts(monto_text)
+                                    if amounts:
+                                        lic['monto'] = amounts[0]
+                                        lic['monto_fmt'] = f"${lic['monto']:,.2f}"
+                                break
+                    except:
+                        pass
+                    
+                    # Get description text
+                    lic['descripcion'] = driver.find_element(By.TAG_NAME, "body").text[:500]
+                    
+                    print(f"   [{i+1}/{min(len(licitaciones), 20)}] {lic['numero']}: {lic.get('monto_fmt', 'Sin monto')}")
+                    
+                    # Go back to list
+                    driver.back()
+                    time.sleep(1)
+                    
+                except Exception as e:
+                    print(f"   [{i+1}] Error: {str(e)[:30]}")
+                    driver.get(BAC_URL)
+                    time.sleep(2)
         
         driver.quit()
         
