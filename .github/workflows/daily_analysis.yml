@@ -2,13 +2,18 @@ name: Análisis Diario de Gastos
 
 on:
   schedule:
-    # 5 ejecuciones de respaldo (Lunes a Viernes)
-    - cron: '30 14 * * 1-5'  # 11:30 AM Argentina
-    - cron: '30 15 * * 1-5'  # 12:30 PM Argentina
-    - cron: '30 16 * * 1-5'  # 13:30 PM Argentina
-    - cron: '30 17 * * 1-5'  # 14:30 PM Argentina
-    - cron: '30 18 * * 1-5'  # 15:30 PM Argentina
-  workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub
+    # Ejecuciones cada hora de 11 AM a 3 PM (Argentina es UTC-3)
+    - cron: '0 14 * * 1-5'  # 11:00 AM Argentina (14:00 UTC)
+    - cron: '0 15 * * 1-5'  # 12:00 PM Argentina (15:00 UTC)
+    - cron: '0 16 * * 1-5'  # 13:00 PM Argentina (16:00 UTC)
+    - cron: '0 17 * * 1-5'  # 14:00 PM Argentina (17:00 UTC)
+    - cron: '0 18 * * 1-5'  # 15:00 PM Argentina (18:00 UTC)
+  workflow_dispatch:
+
+# Evitar superposición de ejecuciones
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   analyze_and_report:
