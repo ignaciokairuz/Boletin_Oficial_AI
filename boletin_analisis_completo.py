@@ -1,14 +1,10 @@
 """
-Boletín Oficial - Análisis COMPLETO de Gastos v8 (Smart Retry System)
+Boletín Oficial - Análisis COMPLETO de Gastos v9 (Date Dropdown)
 -------------------------------------------------
 Features:
-- Reintentos inteligentes GRANULARES:
-  - Normas fallidas (HTTP/PDF error)
-  - Licitaciones fallidas (Scraping error)
-  - Anexos fallidos (Descarga/Texto)
-  - Resúmenes IA fallidos (API error)
-- Gestión de estado mediante `_pendientes.json`
-- Generación de HTML
+- Reintentos inteligentes GRANULARES
+- Selector de Fechas (Dropdown)
+- HTML mejorado
 """
 import requests
 import json
@@ -410,7 +406,7 @@ def regenerate_html():
                 all_data[d] = json.load(f)
         except: pass
         
-    # HTML Template (Keep same as v7 but ensure it renders)
+    # HTML Template
     html = f'''<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -429,10 +425,16 @@ def regenerate_html():
         .sidebar h2 {{ color: var(--accent); margin-bottom: 20px; }}
         .sidebar-section {{ margin-bottom: 25px; }}
         .sidebar-section h3 {{ color: var(--text-secondary); font-size: 0.8em; text-transform: uppercase; margin-bottom: 10px; }}
-        .date-list, .tab-list {{ list-style: none; }}
-        .date-list li, .tab-list li {{ padding: 8px 12px; cursor: pointer; border-radius: 6px; margin-bottom: 4px; }}
-        .date-list li:hover, .tab-list li:hover {{ background: var(--bg-tertiary); }}
-        .date-list li.active {{ background: var(--accent); color: white; }}
+        
+        /* DATE SELECTOR STYLES */
+        .date-select {{ width: 100%; padding: 12px; border-radius: 8px; background: var(--accent); color: white; border: none; font-size: 1em; cursor: pointer; appearance: none; -webkit-appearance: none; text-align: center; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
+        .date-select:hover {{ background: var(--accent-hover); }}
+        .date-select:focus {{ outline: none; box-shadow: 0 0 0 2px var(--text-primary); }}
+        .date-select option {{ background: var(--bg-secondary); color: var(--text-primary); text-align: left; padding: 10px; }}
+
+        .tab-list {{ list-style: none; margin-top: 20px; }}
+        .tab-list li {{ padding: 8px 12px; cursor: pointer; border-radius: 6px; margin-bottom: 4px; }}
+        .tab-list li:hover {{ background: var(--bg-tertiary); }}
         .tab-list li.active {{ background: var(--bg-tertiary); border-left: 3px solid var(--accent); }}
         .theme-toggle {{ display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg-tertiary); border-radius: 8px; cursor: pointer; margin-top: 15px; }}
         .theme-toggle-switch {{ width: 40px; height: 22px; background: #555; border-radius: 11px; position: relative; }}
@@ -485,7 +487,8 @@ def regenerate_html():
             <h2>🔍 Monitor</h2>
             <div class="sidebar-section">
                 <h3>📅 Fecha</h3>
-                <ul class="date-list" id="dateList"></ul>
+                <!-- DATE DROPDOWN -->
+                <select id="dateSelect" class="date-select" onchange="loadDate(this.value)"></select>
             </div>
             <div class="sidebar-section">
                 <h3>📋 Vista</h3>
@@ -539,13 +542,12 @@ def regenerate_html():
         let currentChart = null, chartMode = 'count';
         
         function init() {{
-            const dateList = document.getElementById('dateList');
+            const dateSelect = document.getElementById('dateSelect');
             sortedDates.forEach((date, i) => {{
-                const li = document.createElement('li');
-                li.textContent = allData[date].fecha_display;
-                if (i===0) li.classList.add('active');
-                li.onclick = (e) => loadDate(date, e.target);
-                dateList.appendChild(li);
+                const opt = document.createElement('option');
+                opt.value = date;
+                opt.textContent = allData[date].fecha_display;
+                dateSelect.appendChild(opt);
             }});
             
             // Populate filter
@@ -562,14 +564,12 @@ def regenerate_html():
             if(sortedDates.length > 0) loadDate(sortedDates[0]);
         }}
 
-        function loadDate(date, targetLi) {{
+        function loadDate(date) {{
             const d = allData[date];
             if (!d) return;
 
-            if (targetLi) {{
-                document.querySelectorAll('.date-list li').forEach(li => li.classList.remove('active'));
-                targetLi.classList.add('active');
-            }}
+            // Sync visual selector if needed
+            document.getElementById('dateSelect').value = date;
 
             document.getElementById('numBoletin').textContent = d.numero_boletin;
             document.getElementById('fechaDisplay').textContent = d.fecha_display;
@@ -586,29 +586,29 @@ def regenerate_html():
                 const expensive = g.monto > 100000000 ? 'expensive' : '';
                 const anexos = g.anexos && g.anexos.length ? 
                     '<div class="anexos-list">📎 ' + g.anexos.map(a => `<span class="anexo-link" onclick="goToAnexo('${{a.nombre.replace(/[.-]/g,'_')}}')">${{a.nombre.substring(0,20)}}</span>`).join('') + '</div>' : '';
-                return `<div class="card ${expensive}" data-organismo="${g.organismo || ''}">
-                    <div class="amount">${g.monto_fmt || '$0'}</div>
-                    <div class="desc"><strong>${g.resumen_corto || g.sumario || ''}</strong></div>
-                    <div class="desc-long">${g.resumen_largo || ''}</div>
+                return `<div class="card ${{expensive}}" data-organismo="${{g.organismo || ''}}">
+                    <div class="amount">${{g.monto_fmt || '$0'}}</div>
+                    <div class="desc"><strong>${{g.resumen_corto || g.sumario || ''}}</strong></div>
+                    <div class="desc-long">${{g.resumen_largo || ''}}</div>
                     <div class="meta">
-                        <span class="tag">${(g.organismo || '').substring(0,30)}</span>
+                        <span class="tag">${{(g.organismo || '').substring(0,30)}}</span>
                         <button class="btn secondary" onclick="this.closest('.card').classList.toggle('expanded')">Ver más</button>
-                        <a href="${g.url || '#'}" target="_blank" class="btn">PDF</a>
+                        <a href="${{g.url || '#'}}" target="_blank" class="btn">PDF</a>
                     </div>
-                    ${anexos}
+                    ${{anexos}}
                 </div>`;
             }}).join('');
 
             // Render Licitaciones
             document.getElementById('licitacionesGrid').innerHTML = (d.licitaciones || []).map(l => {{
                 return `<div class="card">
-                    <div class="amount">${l.monto_fmt || 'Monto no disponible'}</div>
-                    <div class="desc"><strong>${l.numero || ''}</strong> - ${l.nombre || ''}</div>
-                    <div class="desc">${l.resumen_ia || ''}</div>
+                    <div class="amount">${{l.monto_fmt || 'Monto no disponible'}}</div>
+                    <div class="desc"><strong>${{l.numero || ''}}</strong> - ${{l.nombre || ''}}</div>
+                    <div class="desc">${{l.resumen_ia || ''}}</div>
                     <div class="meta">
-                        <span class="tag">${l.tipo || ''}</span>
-                        <span class="tag">${(l.unidad || '').substring(0,25)}</span>
-                        <a href="${l.url || '#'}" target="_blank" class="btn">Ver en BAC</a>
+                        <span class="tag">${{l.tipo || ''}}</span>
+                        <span class="tag">${{(l.unidad || '').substring(0,25)}}</span>
+                        <a href="${{l.url || '#'}}" target="_blank" class="btn">Ver en BAC</a>
                     </div>
                 </div>`;
             }}).join('');
@@ -616,11 +616,11 @@ def regenerate_html():
             // Render Otros
             document.getElementById('otrosGrid').innerHTML = (d.sin_gastos || []).map(s => {{
                 return `<div class="card">
-                    <div class="desc"><strong>${s.nombre || ''}</strong></div>
-                    <div class="desc">${s.resumen_corto || s.sumario || ''}</div>
+                    <div class="desc"><strong>${{s.nombre || ''}}</strong></div>
+                    <div class="desc">${{s.resumen_corto || s.sumario || ''}}</div>
                     <div class="meta">
-                        <span class="tag">${(s.organismo || '').substring(0,30)}</span>
-                        <a href="${s.url || '#'}" target="_blank" class="btn">PDF</a>
+                        <span class="tag">${{(s.organismo || '').substring(0,30)}}</span>
+                        <a href="${{s.url || '#'}}" target="_blank" class="btn">PDF</a>
                     </div>
                 </div>`;
             }}).join('');
@@ -631,11 +631,11 @@ def regenerate_html():
             allNorms.forEach(n => {{
                 (n.anexos || []).forEach(a => {{
                     const aid = a.nombre.replace(/[.-]/g,'_');
-                    anexosHtml += `<div class="card" id="anexo_${aid}">
-                        <div class="desc"><strong>📄 ${a.nombre}</strong></div>
-                        <div class="desc">De: ${n.nombre || ''}</div>
-                        <div class="desc">${a.resumen || ''}</div>
-                        <a href="${a.url || '#'}" target="_blank" class="btn">Descargar</a>
+                    anexosHtml += `<div class="card" id="anexo_${{aid}}">
+                        <div class="desc"><strong>📄 ${{a.nombre}}</strong></div>
+                        <div class="desc">De: ${{n.nombre || ''}}</div>
+                        <div class="desc">${{a.resumen || ''}}</div>
+                        <a href="${{a.url || '#'}}" target="_blank" class="btn">Descargar</a>
                     </div>`;
                 }});
             }});
