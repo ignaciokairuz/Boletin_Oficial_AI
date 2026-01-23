@@ -1,11 +1,12 @@
 """
-Boletín Oficial - Análisis COMPLETO de Gastos v11 (Major Rewrite)
+Boletín Oficial - Análisis COMPLETO de Gastos v12
 -------------------------------------------------
-FIXED:
-- Aggressive AI output cleaning (removes ALL markdown, reasoning, etc.)
-- Licitaciones now saved immediately after successful scrape
-- Anexos: Skip AI if text too long, use fallback
-- Chart data structure verified
+Features:
+- Licitaciones: Multi-page scraping (scrapes ALL pages)
+- Gastos: Clean short summary + 4-sentence long summary
+- Otras Normas: Added "Ver más" support
+- Anexos: AI summary enabled (input truncated to 300 chars)
+- UI: Restored Organism filter
 """
 import requests
 import json
@@ -47,88 +48,44 @@ def extract_amounts(text):
     return amounts
 
 def clean_ai_response(text):
-    """AGGRESSIVELY clean AI output to extract only the final answer."""
+    """Clean AI output to extract only the final answer."""
     if not text: return ""
     
     # If it's an error message, return fallback
-    if "Error code:" in text or "BadRequestError" in text:
-        return "Ver documento"
+    if "Error code:" in text or "BadRequestError" in text: return "Ver documento"
     
     result = text
-    
     # Remove everything before common AI markers
-    markers = ["assistantfinal", "final**", "**💬", "💬 Response:", 
-               "Response:**", "**Título:**", "**Title:**", "**Resumen:**",
+    markers = ["assistantfinal", "final**", "**💬", "Response:**", "**Título:**", 
                "🤔 Analysis:", "Analysis:**", "Análisis:**"]
     for m in markers:
-        if m in result:
-            parts = result.split(m)
-            result = parts[-1]  # Take everything AFTER the marker
+        if m in result: result = result.split(m)[-1]
     
-    # Remove ALL markdown formatting
-    result = re.sub(r'\*\*([^*]+)\*\*', r'\1', result)  # **bold** -> bold
-    result = re.sub(r'\*([^*]+)\*', r'\1', result)      # *italic* -> italic
-    result = re.sub(r'`([^`]+)`', r'\1', result)        # `code` -> code
-    result = re.sub(r'#{1,6}\s+', '', result)           # ## headers
-    
-    # Remove "Count:" patterns and technical metadata
+    # Remove markdown
+    result = re.sub(r'\*\*([^*]+)\*\*', r'\1', result)
+    result = re.sub(r'\*([^*]+)\*', r'\1', result)
+    result = re.sub(r'`([^`]+)`', r'\1', result)
+    result = re.sub(r'#{1,6}\s+', '', result)
     result = re.sub(r'Count:.*?(?:\.|,|$)', '', result)
-    result = re.sub(r'\d+\s*words?\.?', '', result)
     
-    # Remove trailing $ signs (from some AI outputs)
-    result = result.rstrip('$').rstrip()
-    
-    # Take only first sentence/paragraph
-    lines = [l.strip() for l in result.split('\n') if l.strip()]
-    if lines:
-        result = lines[0]
-    
-    # If result is too long, take first sentence
-    if len(result) > 200:
-        sentences = re.split(r'[.!?]', result)
-        if sentences:
-            result = sentences[0] + '.'
-    
-    # Final cleanup
-    result = result.strip()
-    result = re.sub(r'\s+', ' ', result)  # Multiple spaces -> single
-    
-    # If still empty or too short, return fallback
-    if len(result) < 5:
-        return "Ver documento"
-    
-    return result[:150]  # Hard limit
+    return result.strip()[:600] # Allow longer text for detailed summaries
 
-def get_ai_summary(client, prompt, system_prompt, max_input_chars=300):
-    """Get AI summary with aggressive input/output cleaning."""
+def get_ai_summary(client, prompt, system_prompt, max_input_chars=400):
     try:
-        # Truncate input aggressively to avoid token overflow
         truncated_prompt = prompt[:max_input_chars]
-        result = client.predict(
-            message=truncated_prompt, 
-            system_prompt=system_prompt, 
-            temperature=0.3, 
-            api_name="/chat"
-        )
+        result = client.predict(message=truncated_prompt, system_prompt=system_prompt, temperature=0.3, api_name="/chat")
         return clean_ai_response(result)
-    except Exception as e:
-        error_str = str(e)
-        if "131072 tokens" in error_str or "context length" in error_str:
-            print(" [TOKEN LIMIT]", end="")
-            return "Ver documento"
-        print(f" [AI Error: {error_str[:30]}]", end="")
-        return None
+    except: return None
 
 def process_norm(item):
     try:
         r = requests.get(item['url'], timeout=120)
-        if r.status_code != 200:
-            return False, item, f"HTTP {r.status_code}"
+        if r.status_code != 200: return False, item, f"HTTP {r.status_code}"
         with io.BytesIO(r.content) as f:
             reader = PdfReader(f)
             text = "".join([p.extract_text() + "\n" for p in reader.pages])
         amounts = extract_amounts(text)
-        item['text_snippet'] = text[:400]  # Reduced
+        item['text_snippet'] = text[:600]
         if amounts:
             item['monto'] = max(amounts)
             item['monto_fmt'] = f"${item['monto']:,.2f}"
@@ -137,25 +94,20 @@ def process_norm(item):
         else:
             item['tiene_gasto'] = False
         return True, item, None
-    except requests.exceptions.Timeout:
-        return False, item, "timeout"
-    except Exception as e:
-        return False, item, str(e)[:50]
+    except: return False, item, "error"
 
 def process_anexo(anexo):
-    """Extract MINIMAL text from anexo PDF."""
     try:
         r = requests.get(anexo['url'], timeout=60)
         if r.status_code != 200: return None
         with io.BytesIO(r.content) as f:
             reader = PdfReader(f)
             text = reader.pages[0].extract_text() if reader.pages else ""
-        return text[:150]  # VERY short
-    except: 
-        return None
+        return text[:300] # Truncate HARD to fit context
+    except: return None
 
 def scrape_licitaciones(fecha_hoy):
-    """Scrape Buenos Aires Compras - handles session redirect."""
+    """Scrape Buenos Aires Compras - Multi-page support"""
     print(f"\n🏛️ Scrapeando licitaciones de {fecha_hoy}...")
     licitaciones = []
     success = True
@@ -172,68 +124,81 @@ def scrape_licitaciones(fecha_hoy):
         
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         
-        # Visit homepage first to establish session
         print("   Estableciendo sesión...")
         driver.get("https://www.buenosairescompras.gob.ar/")
         time.sleep(3)
-        
-        # Navigate to tenders page
         driver.get(BAC_URL)
         time.sleep(2)
         
-        print(f"   Título: {driver.title}")
-        print(f"   URL: {driver.current_url}")
-        
-        # Verify correct page
         if "ListarAperturaUltimos30Dias" not in driver.current_url:
             print("   ⚠️ Redirigido! Reintentando...")
             driver.get(BAC_URL)
             time.sleep(3)
         
-        try:
-            WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, "ctl00_CPH1_GridListaPliegos")))
-        except:
-            print("   ⚠️ Timeout. Screenshot guardado.")
-            driver.save_screenshot('debug_scraping_error.png')
-            driver.quit()
-            return [], False
-            
-        time.sleep(2)
-        
-        table = driver.find_element(By.ID, "ctl00_CPH1_GridListaPliegos")
-        rows = table.find_elements(By.TAG_NAME, "tr")[1:]
-        print(f"   Encontradas {len(rows)} fila(s)")
-        
         today_parts = fecha_hoy.split('/')
         today_str = f"{today_parts[0]}/{today_parts[1]}/{today_parts[2]}"
         
-        for row in rows:
+        # Scrape loop for multiple pages
+        page_num = 1
+        while True:
+            print(f"   📄 Procesando página {page_num}...")
+            
             try:
-                cols = row.find_elements(By.TAG_NAME, "td")
-                if len(cols) < 6: continue
-                if today_str in cols[3].text.strip():
-                    numero = cols[0].text.strip()
-                    licitaciones.append({
-                        'numero': numero,
-                        'nombre': cols[1].text.strip(),
-                        'tipo': cols[2].text.strip(),
-                        'fecha': cols[3].text.strip().split()[0],
-                        'estado': cols[4].text.strip(),
-                        'unidad': cols[5].text.strip(),
-                        'url': f"https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id={numero}",
-                        'resumen_ia': f"Licitación {cols[2].text.strip()} - {cols[1].text.strip()[:50]}"
-                    })
-            except: continue
+                WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "ctl00_CPH1_GridListaPliegos")))
+                table = driver.find_element(By.ID, "ctl00_CPH1_GridListaPliegos")
+                rows = table.find_elements(By.TAG_NAME, "tr")[1:]
+                
+                rows_processed = 0
+                for row in rows:
+                    try:
+                        cols = row.find_elements(By.TAG_NAME, "td")
+                        if len(cols) < 6: continue
+                        
+                        fecha_col = cols[3].text.strip()
+                        if today_str in fecha_col:
+                            numero = cols[0].text.strip()
+                            licitaciones.append({
+                                'numero': numero,
+                                'nombre': cols[1].text.strip(),
+                                'tipo': cols[2].text.strip(),
+                                'fecha': fecha_col.split()[0],
+                                'estado': cols[4].text.strip(),
+                                'unidad': cols[5].text.strip(),
+                                'url': f"https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id={numero}",
+                                'resumen_ia': f"{cols[2].text.strip()} - {cols[1].text.strip()}"
+                            })
+                            rows_processed += 1
+                    except: continue
+                
+                print(f"     Encontradas {rows_processed} en pág {page_num}")
+                
+                # Check pagination "Next" button usually "..." or ">" or high numbers
+                # Actually BAC pagination is tricky. Let's look for the pagination block.
+                # Usually standard .NET table pagination
+                
+                try:
+                    # Look for the pager row, usually last row of table or separate div
+                    # Try finding the 'next page' link. It's usually a link with text '...' or page number + 1
+                    # To be simpler, let's look for link with text corresponding to next page number
+                    next_page_link = driver.find_element(By.XPATH, f"//a[contains(@href,'Page${page_num + 1}')]")
+                    driver.execute_script("arguments[0].click();", next_page_link)
+                    time.sleep(3)
+                    page_num += 1
+                except:
+                    print("     Fin de paginación.")
+                    break
+                    
+            except Exception as e:
+                print(f"   Error paginación: {e}")
+                break
         
         print(f"   Total hoy: {len(licitaciones)}")
         driver.quit()
-        return licitaciones, True  # Always return success if we got here
+        return licitaciones, True
 
     except Exception as e:
         print(f"⚠️ Error scraping crítico: {e}")
-        if driver:
-            try: driver.quit()
-            except: pass
+        if driver: driver.quit()
         return [], False
 
 def main():
@@ -243,9 +208,7 @@ def main():
     try:
         response = requests.get(API_URL, timeout=30)
         data = response.json()
-    except Exception as e:
-        print(f"❌ Error API: {e}")
-        return
+    except: return
 
     boletin = data.get('boletin', {})
     fecha_raw = boletin.get('fecha_publicacion', '?')
@@ -283,9 +246,10 @@ def main():
     if not existing_data:
         print("🆕 MODO INICIAL")
         existing_data = {
-            'fecha': fecha_iso, 'fecha_display': fecha_raw, 'numero_boletin': numero,
+            'fecha': fecha_iso, 'fecha_display': fecha_raw,
             'gastos': [], 'sin_gastos': [], 'licitaciones': [], 'organismos': []
         }
+        # Gather norms...
         normas_pendientes = []
         normas_root = data.get('normas', {}).get('normas', {})
         for poder, tipos in normas_root.items():
@@ -302,7 +266,6 @@ def main():
         pending_state = {
             'normas_pendientes': normas_pendientes,
             'licitaciones_necesarias': True,
-            'anexos_pendientes': True,
             'resumenes_pendientes': True
         }
 
@@ -334,99 +297,90 @@ def main():
         pending_state['normas_pendientes'] = todavia_pendientes
         with open(data_file, 'w', encoding='utf-8') as f: json.dump(existing_data, f, indent=2, ensure_ascii=False)
 
-    # 2. LICITACIONES (scrape and IMMEDIATELY save)
+    # 2. LICITACIONES (Multi-page)
     if pending_state.get('licitaciones_necesarias'):
         lics, success = scrape_licitaciones(fecha_raw)
         if success and len(lics) > 0:
             existing_data['licitaciones'] = lics
             pending_state['licitaciones_necesarias'] = False
             print(f"✅ {len(lics)} Licitaciones guardadas")
-            # IMMEDIATE SAVE after successful scrape
-            with open(data_file, 'w', encoding='utf-8') as f: 
-                json.dump(existing_data, f, indent=2, ensure_ascii=False)
+            with open(data_file, 'w', encoding='utf-8') as f: json.dump(existing_data, f, indent=2, ensure_ascii=False)
         else:
             print("⚠️ Licitaciones FALLÓ")
             pending_state['licitaciones_necesarias'] = True
-            with open(pending_file, 'w', encoding='utf-8') as f: 
-                json.dump(pending_state, f, indent=2, ensure_ascii=False)
+            with open(pending_file, 'w', encoding='utf-8') as f: json.dump(pending_state, f, indent=2, ensure_ascii=False)
 
-    # 3. AI SUMMARIES (with aggressive cleaning)
-    if pending_state.get('resumenes_pendientes') or pending_state.get('anexos_pendientes'):
+    # 3. AI SUMMARIES (Enhanced)
+    if pending_state.get('resumenes_pendientes'):
         print("\n🤖 Procesando IA...")
         ia_errors = 0
         try:
             client = Client("amd/gpt-oss-120b-chatbot")
             
-            # SIMPLIFIED prompts - just ask for the answer, nothing else
-            CORTO = "Responde SOLO con un título de 5-8 palabras. Sin prefijos ni explicaciones."
-            LARGO = "Responde SOLO con 2 oraciones sobre el contexto. Sin títulos."
+            # PROMPTS
+            CORTO = "Responde SOLO con un título de 5-8 palabras. Sin prefijos."
+            LARGO = "Explica en 4 oraciones sencillas qué se compra y para qué sirve, explicado para un ciudadano común. Sin títulos."
             
             for g in existing_data['gastos']:
-                if not g.get('resumen_corto') or len(g.get('resumen_corto', '')) > 100:
+                if not g.get('resumen_corto') or len(g.get('resumen_corto', '')) > 200:
                     print(f"  G: {g['nombre'][:15]}...", end="", flush=True)
-                    prompt = f"{g['nombre']}\n{g.get('text_snippet','')[:200]}"
-                    res = get_ai_summary(client, prompt, CORTO, max_input_chars=250)
+                    prompt = f"{g['nombre']}\n{g.get('text_snippet','')[:300]}"
+                    res = get_ai_summary(client, prompt, CORTO, max_input_chars=300)
                     if res and res != "Ver documento": 
                         g['resumen_corto'] = res
-                        # Get largo with fresh call
-                        largo = get_ai_summary(client, prompt, LARGO, max_input_chars=250)
-                        g['resumen_largo'] = largo if largo else g.get('sumario', '')[:200]
+                        # Long summary
+                        largo = get_ai_summary(client, prompt, LARGO, max_input_chars=300)
+                        g['resumen_largo'] = largo if largo else g.get('sumario', '')[:800]
                         print(" ✅")
                     else:
                         g['resumen_corto'] = g.get('sumario', '')[:80] or "Sin resumen"
-                        g['resumen_largo'] = g.get('sumario', '')[:200] or ""
+                        g['resumen_largo'] = g.get('sumario', '')[:300] or ""
                         ia_errors += 1
-                        print(" (fallback)")
-            
-            for s in existing_data['sin_gastos'][:20]:  # Limit
-                if not s.get('resumen_corto') or len(s.get('resumen_corto', '')) > 100:
+                        print(" (fb)")
+
+            # Otras Normas (now with long summary)
+            for s in existing_data['sin_gastos'][:30]:
+                if not s.get('resumen_corto') or len(s.get('resumen_corto', '')) > 200:
                     print(f"  N: {s['nombre'][:15]}...", end="", flush=True)
-                    prompt = f"{s['nombre']}\n{s.get('sumario','')[:100]}"
-                    res = get_ai_summary(client, prompt, CORTO, max_input_chars=200)
+                    prompt = f"{s['nombre']}\n{s.get('sumario','')[:150]}"
+                    res = get_ai_summary(client, prompt, CORTO, max_input_chars=250)
                     if res and res != "Ver documento":
                         s['resumen_corto'] = res
+                        largo = get_ai_summary(client, prompt, LARGO, max_input_chars=250)
+                        s['resumen_largo'] = largo if largo else s.get('sumario', '')[:800]
                         print(" ✅")
                     else: 
                         s['resumen_corto'] = s.get('sumario', '')[:80] or "Sin resumen"
+                        s['resumen_largo'] = s.get('sumario', '')[:300] or ""
                         ia_errors += 1
-                        print(" (fallback)")
+                        print(" (fb)")
             
-            # Anexos: use sumario as fallback, don't call AI
-            print("📎 Anexos (usando sumarios como fallback)...")
+            # Anexos with truncated AI
+            print("📎 Anexos (IA truncada)...")
             for n in existing_data['gastos'] + existing_data['sin_gastos']:
                 for a in n.get('anexos', []):
-                    if not a.get('resumen'):
-                        # Just use the parent norm's sumario as context
-                        a['resumen'] = f"Anexo de: {n.get('nombre', 'Norma')[:50]}"
+                    if not a.get('resumen') or "Anexo de:" in a.get('resumen', ''):
+                        txt = process_anexo(a)
+                        if txt:
+                            res = get_ai_summary(client, f"Resumir en 1 oración simple: {txt}", "Resumen simple", max_input_chars=200)
+                            a['resumen'] = res if res else f"Anexo de: {n.get('nombre')[:50]}"
             
             pending_state['resumenes_pendientes'] = False
-            pending_state['anexos_pendientes'] = False
                 
         except Exception as e:
             print(f"❌ Error IA: {e}")
 
     # CLEANUP
-    existing_data['total_normas'] = len(existing_data['gastos']) + len(existing_data['sin_gastos'])
     existing_data['organismos'] = sorted(list(set(g['organismo'] for g in existing_data['gastos'])))
     existing_data['gastos'].sort(key=lambda x: x.get('monto', 0), reverse=True)
     
-    with open(data_file, 'w', encoding='utf-8') as f: 
-        json.dump(existing_data, f, indent=2, ensure_ascii=False)
+    with open(data_file, 'w', encoding='utf-8') as f: json.dump(existing_data, f, indent=2, ensure_ascii=False)
         
-    has_pend = (
-        len(pending_state.get('normas_pendientes', [])) > 0 or 
-        pending_state.get('licitaciones_necesarias') or
-        pending_state.get('resumenes_pendientes') or
-        pending_state.get('anexos_pendientes')
-    )
-    
-    if not has_pend:
+    if not any(pending_state.values()):
         if os.path.exists(pending_file): os.remove(pending_file)
         print("🎉 Todo Completado")
     else:
-        with open(pending_file, 'w', encoding='utf-8') as f: 
-            json.dump(pending_state, f, indent=2, ensure_ascii=False)
-        print("💾 Pendientes guardados.")
+        with open(pending_file, 'w', encoding='utf-8') as f: json.dump(pending_state, f, indent=2, ensure_ascii=False)
 
     regenerate_html()
 
@@ -439,8 +393,7 @@ def regenerate_html():
     all_data = {}
     for d in dates:
         try:
-            with open(os.path.join(DATA_DIR, f"{d}.json"), 'r', encoding='utf-8') as f: 
-                all_data[d] = json.load(f)
+            with open(os.path.join(DATA_DIR, f"{d}.json"), 'r', encoding='utf-8') as f: all_data[d] = json.load(f)
         except: pass
         
     html = f'''<!DOCTYPE html>
@@ -460,16 +413,15 @@ def regenerate_html():
         .sidebar h2 {{ color: var(--accent); margin-bottom: 20px; }}
         .sidebar-section {{ margin-bottom: 20px; }}
         .sidebar-section h3 {{ color: var(--text-secondary); font-size: 0.75em; text-transform: uppercase; margin-bottom: 8px; }}
-        .date-select {{ width: 100%; padding: 10px; border-radius: 6px; background: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; }}
+        .date-select, .filter-select {{ width: 100%; padding: 10px; border-radius: 6px; background: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; }}
+        .filter-select {{ background: var(--bg-tertiary); margin-top: 10px; }}
         .tab-list {{ list-style: none; }}
         .tab-list li {{ padding: 8px 10px; cursor: pointer; border-radius: 5px; margin-bottom: 3px; font-size: 0.9em; }}
         .tab-list li:hover {{ background: var(--bg-tertiary); }}
         .tab-list li.active {{ background: var(--bg-tertiary); border-left: 3px solid var(--accent); }}
-        .theme-toggle {{ display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--bg-tertiary); border-radius: 6px; cursor: pointer; margin-top: 10px; font-size: 0.85em; }}
         .main {{ margin-left: 260px; flex: 1; padding: 25px; }}
         .header {{ background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary)); padding: 20px; border-radius: 10px; margin-bottom: 20px; }}
-        .header h1 {{ font-size: 1.5em; margin-bottom: 5px; }}
-        .stats {{ display: flex; gap: 10px; margin-top: 10px; }}
+        .stats {{ display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }}
         .stat {{ background: rgba(233,69,96,0.15); padding: 8px 12px; border-radius: 6px; }}
         .stat-value {{ font-size: 1.2em; font-weight: bold; color: var(--accent); }}
         .stat-label {{ font-size: 0.7em; color: var(--text-secondary); }}
@@ -489,10 +441,6 @@ def regenerate_html():
         .tab-content {{ display: none; }}
         .tab-content.active {{ display: block; }}
         .chart-container {{ background: var(--bg-secondary); padding: 15px; border-radius: 10px; height: 400px; }}
-        .chart-toggle {{ display: flex; gap: 8px; margin-bottom: 10px; }}
-        .chart-toggle button {{ padding: 6px 12px; border-radius: 5px; border: none; cursor: pointer; background: var(--bg-tertiary); color: var(--text-primary); font-size: 0.85em; }}
-        .chart-toggle button.active {{ background: var(--accent); color: white; }}
-        .empty-msg {{ color: var(--text-secondary); padding: 20px; text-align: center; }}
     </style>
 </head>
 <body>
@@ -504,6 +452,10 @@ def regenerate_html():
                 <select id="dateSelect" class="date-select" onchange="loadDate(this.value)"></select>
             </div>
             <div class="sidebar-section">
+                <h3>🏛️ Organismo</h3>
+                <select id="filterOrganismo" class="filter-select" onchange="filterCards()"></select>
+            </div>
+            <div class="sidebar-section">
                 <h3>📋 Vista</h3>
                 <ul class="tab-list">
                     <li class="active" onclick="showTab('gastos')">💰 Gastos</li>
@@ -512,9 +464,6 @@ def regenerate_html():
                     <li onclick="showTab('anexos')">📎 Anexos</li>
                     <li onclick="showTab('stats')">📊 Estadísticas</li>
                 </ul>
-            </div>
-            <div class="theme-toggle" onclick="toggleTheme()">
-                🌙/☀️ Cambiar tema
             </div>
         </aside>
         <main class="main">
@@ -533,10 +482,6 @@ def regenerate_html():
             <div class="tab-content" id="tab-anexos"><div class="card-grid" id="anexosGrid"></div></div>
             <div class="tab-content" id="tab-stats">
                 <div class="chart-container">
-                    <div class="chart-toggle">
-                        <button class="active" onclick="updateChart('count')">📊 Cantidad</button>
-                        <button onclick="updateChart('amount')">💰 Monto</button>
-                    </div>
                     <canvas id="statsChart"></canvas>
                 </div>
             </div>
@@ -546,7 +491,7 @@ def regenerate_html():
     <script>
         const allData = {json.dumps(all_data, ensure_ascii=False)};
         const sortedDates = Object.keys(allData).sort().reverse();
-        let currentChart = null, chartMode = 'count';
+        let currentChart = null;
         
         function init() {{
             const dateSelect = document.getElementById('dateSelect');
@@ -570,13 +515,24 @@ def regenerate_html():
             document.getElementById('statLic').textContent = (d.licitaciones || []).length;
             
             let totalAnexos = 0;
-            [...(d.gastos || []), ...(d.sin_gastos || [])].forEach(n => totalAnexos += (n.anexos || []).length);
+            [...(d.gastos||[]), ...(d.sin_gastos||[])].forEach(n => totalAnexos += (n.anexos || []).length);
             document.getElementById('statAnexos').textContent = totalAnexos;
+            
+            // Populate Filters
+            const filter = document.getElementById('filterOrganismo');
+            filter.innerHTML = '<option value="">Todos</option>';
+            const orgs = new Set();
+            (d.gastos || []).forEach(g => orgs.add(g.organismo || 'Otros'));
+            Array.from(orgs).sort().forEach(o => {{
+                const opt = document.createElement('option');
+                opt.value = o; opt.textContent = o.substring(0,30);
+                filter.appendChild(opt);
+            }});
 
             // Gastos
             document.getElementById('gastosGrid').innerHTML = (d.gastos || []).map(g => {{
                 const expensive = (g.monto || 0) > 100000000 ? 'expensive' : '';
-                return `<div class="card ${{expensive}}">
+                return `<div class="card ${{expensive}}" data-org="${{g.organismo}}">
                     <div class="amount">${{g.monto_fmt || '$0'}}</div>
                     <div class="desc"><strong>${{g.resumen_corto || 'Sin título'}}</strong></div>
                     <div class="desc-long">${{g.resumen_largo || g.sumario || ''}}</div>
@@ -602,12 +558,14 @@ def regenerate_html():
                 </div>`;
             }}).join('') || '<div class="empty-msg">No hay licitaciones para esta fecha</div>';
 
-            // Otros
+            // Otros ("sin_gastos")
             document.getElementById('otrosGrid').innerHTML = (d.sin_gastos || []).map(s => {{
-                return `<div class="card">
+                return `<div class="card" data-org="${{s.organismo}}">
                     <div class="desc"><strong>${{s.resumen_corto || s.nombre || ''}}</strong></div>
+                     <div class="desc-long">${{s.resumen_largo || s.sumario || ''}}</div>
                     <div class="meta">
                         <span class="tag">${{(s.organismo || '').substring(0,25)}}</span>
+                        <button class="btn secondary" onclick="this.closest('.card').classList.toggle('expanded')">Ver más</button>
                         <a href="${{s.url || '#'}}" target="_blank" class="btn">PDF</a>
                     </div>
                 </div>`;
@@ -630,11 +588,13 @@ def regenerate_html():
             if (document.getElementById('tab-stats').classList.contains('active')) initChart();
         }}
         
-        function toggleTheme() {{ 
-            document.body.classList.toggle('light-mode'); 
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); 
+        function filterCards() {{
+            const val = document.getElementById('filterOrganismo').value;
+            document.querySelectorAll('.card').forEach(c => {{
+                if(!val || !c.dataset.org) c.style.display = 'block';
+                else c.style.display = c.dataset.org === val ? 'block' : 'none';
+            }});
         }}
-        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
         
         function showTab(tab) {{
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -649,56 +609,24 @@ def regenerate_html():
                 const ctx = document.getElementById('statsChart').getContext('2d');
                 const dates = Object.keys(allData).sort();
                 
-                // Collect all unique organismos
                 const orgs = new Set();
-                dates.forEach(dateKey => {{
-                    const dayData = allData[dateKey];
-                    if (dayData && dayData.gastos) {{
-                        dayData.gastos.forEach(g => orgs.add(g.organismo || 'Otros'));
-                    }}
-                }});
-                
+                dates.forEach(d => (allData[d].gastos || []).forEach(g => orgs.add(g.organismo || 'Otros')));
                 const orgList = Array.from(orgs).slice(0, 8);
                 const colors = ['#e94560','#4ecca3','#ffc107','#00bcd4','#9c27b0','#ff5722','#2196f3','#8bc34a'];
                 
                 const datasets = orgList.map((org, i) => ({{
                     label: org.substring(0, 18),
-                    data: dates.map(dateKey => {{
-                        const dayData = allData[dateKey];
-                        if (!dayData || !dayData.gastos) return 0;
-                        const filtered = dayData.gastos.filter(x => x.organismo === org);
-                        return chartMode === 'count' ? filtered.length : filtered.reduce((s, x) => s + (x.monto || 0), 0);
-                    }}),
+                    data: dates.map(d => (allData[d].gastos || []).filter(x => x.organismo === org).length),
                     backgroundColor: colors[i % colors.length]
                 }}));
                 
                 if (currentChart) currentChart.destroy();
                 currentChart = new Chart(ctx, {{
                     type: 'bar',
-                    data: {{
-                        labels: dates.map(d => allData[d] ? allData[d].fecha_display : d),
-                        datasets: datasets
-                    }},
-                    options: {{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {{ legend: {{ position: 'bottom', labels: {{ boxWidth: 12, font: {{ size: 10 }} }} }} }},
-                        scales: {{
-                            x: {{ stacked: true, ticks: {{ font: {{ size: 10 }} }} }},
-                            y: {{ stacked: true }}
-                        }}
-                    }}
+                    data: {{ labels: dates.map(d => allData[d].fecha_display), datasets }},
+                    options: {{ responsive: true, scales: {{ x: {{ stacked: true }}, y: {{ stacked: true }} }} }}
                 }});
-            }} catch(e) {{
-                console.error("Chart error:", e);
-            }}
-        }}
-        
-        function updateChart(mode) {{
-            chartMode = mode;
-            document.querySelectorAll('.chart-toggle button').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            initChart();
+            }} catch(e) {{}}
         }}
         
         init();
