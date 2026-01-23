@@ -562,62 +562,62 @@ def regenerate_html():
                 filter.appendChild(opt);
             }});
 
-            document.getElementById('gastosGrid').innerHTML = (d.gastos || []).map(g => {
+            document.getElementById('gastosGrid').innerHTML = (d.gastos || []).map(g => {{
                 const expensive = (g.monto || 0) > 100000000 ? 'expensive' : '';
                 const anexosHtml = (g.anexos || []).length > 0 
                     ? `<div class="anexos-list" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bg-tertiary);">
                         <small style="color:var(--text-secondary);">📎 Anexos:</small>
-                        ${(g.anexos || []).map(a => `<a href="${a.url}" target="_blank" class="tag" style="margin-left:4px;text-decoration:none;">${(a.nombre || 'Anexo').substring(0,20)}</a>`).join('')}
+                        ${{(g.anexos || []).map(a => `<a href="${{a.url}}" target="_blank" class="tag" style="margin-left:4px;text-decoration:none;">${{(a.nombre || 'Anexo').substring(0,20)}}</a>`).join('')}}
                        </div>` 
                     : '';
                 const resumenLargo = g.resumen_largo || g.sumario || g.text_snippet || 'Sin información adicional disponible.';
-                return `<div class="card ${expensive}" data-org="${g.organismo}">
-                    <div class="amount">${g.monto_fmt || '$0'}</div>
-                    <div class="desc"><strong>${g.resumen_corto || g.nombre || 'Sin título'}</strong></div>
-                    <div class="desc-long">${resumenLargo}${anexosHtml}</div>
+                return `<div class="card ${{expensive}}" data-org="${{g.organismo}}">
+                    <div class="amount">${{g.monto_fmt || '$0'}}</div>
+                    <div class="desc"><strong>${{g.resumen_corto || g.nombre || 'Sin título'}}</strong></div>
+                    <div class="desc-long">${{resumenLargo}}${{anexosHtml}}</div>
                     <div class="meta">
-                        <span class="tag">${(g.organismo || '').substring(0,25)}</span>
+                        <span class="tag">${{(g.organismo || '').substring(0,25)}}</span>
                         <button class="btn secondary" onclick="this.closest('.card').classList.toggle('expanded')">Ver más</button>
-                        <a href="${g.url || '#'}" target="_blank" class="btn">PDF</a>
+                        <a href="${{g.url || '#'}}" target="_blank" class="btn">PDF</a>
                     </div>
                 </div>`;
-            }).join('') || '<p>No hay gastos</p>';
+            }}).join('') || '<p>No hay gastos</p>';
 
-            document.getElementById('licitacionesGrid').innerHTML = (d.licitaciones || []).map(l => {
+            document.getElementById('licitacionesGrid').innerHTML = (d.licitaciones || []).map(l => {{
                 const hasMonto = l.monto && l.monto > 0;
                 const montoClass = hasMonto ? (l.monto > 10000000 ? 'expensive' : '') : '';
                 const montoDisplay = l.monto_fmt || 'Monto no especificado';
-                return `<div class="card ${montoClass}">
-                    <div class="amount" style="${hasMonto ? '' : 'color:var(--text-secondary);font-size:0.9em;'}">${montoDisplay}</div>
-                    <div class="desc"><strong>${l.numero || ''}</strong> - ${l.nombre || ''}</div>
-                    <div class="desc" style="margin-top:5px;">${l.resumen_ia || ''}</div>
+                return `<div class="card ${{montoClass}}">
+                    <div class="amount" style="${{hasMonto ? '' : 'color:var(--text-secondary);font-size:0.9em;'}}">${{montoDisplay}}</div>
+                    <div class="desc"><strong>${{l.numero || ''}}</strong> - ${{l.nombre || ''}}</div>
+                    <div class="desc" style="margin-top:5px;">${{l.resumen_ia || ''}}</div>
                     <div class="meta">
-                        <span class="tag">${l.tipo || ''}</span>
-                        <span class="tag">${l.estado || ''}</span>
-                        <span class="tag">${(l.unidad || '').substring(0,25)}</span>
-                        <a href="${l.url || '#'}" target="_blank" class="btn">Ver Pliego en BAC</a>
+                        <span class="tag">${{l.tipo || ''}}</span>
+                        <span class="tag">${{l.estado || ''}}</span>
+                        <span class="tag">${{(l.unidad || '').substring(0,25)}}</span>
+                        <a href="${{l.url || '#'}}" target="_blank" class="btn">Ver Pliego en BAC</a>
                     </div>
                 </div>`;
-            }).join('') || '<p>No hay licitaciones para esta fecha</p>';
+            }}).join('') || '<p>No hay licitaciones para esta fecha</p>';
 
-            document.getElementById('otrosGrid').innerHTML = (d.sin_gastos || []).map(s => {
+            document.getElementById('otrosGrid').innerHTML = (d.sin_gastos || []).map(s => {{
                 const anexosHtml = (s.anexos || []).length > 0 
                     ? `<div class="anexos-list" style="margin-top:8px;">
                         <small style="color:var(--text-secondary);">📎 Anexos:</small>
-                        ${(s.anexos || []).map(a => `<a href="${a.url}" target="_blank" class="tag" style="margin-left:4px;text-decoration:none;">${(a.nombre || 'Anexo').substring(0,20)}</a>`).join('')}
+                        ${{(s.anexos || []).map(a => `<a href="${{a.url}}" target="_blank" class="tag" style="margin-left:4px;text-decoration:none;">${{(a.nombre || 'Anexo').substring(0,20)}}</a>`).join('')}}
                        </div>` 
                     : '';
                 const resumenLargo = s.resumen_largo || s.sumario || s.text_snippet || 'Sin información adicional.';
-                return `<div class="card" data-org="${s.organismo}">
-                    <div class="desc"><strong>${s.resumen_corto || s.nombre || ''}</strong></div>
-                    <div class="desc-long">${resumenLargo}${anexosHtml}</div>
+                return `<div class="card" data-org="${{s.organismo}}">
+                    <div class="desc"><strong>${{s.resumen_corto || s.nombre || ''}}</strong></div>
+                    <div class="desc-long">${{resumenLargo}}${{anexosHtml}}</div>
                     <div class="meta">
-                        <span class="tag">${(s.organismo || '').substring(0,25)}</span>
+                        <span class="tag">${{(s.organismo || '').substring(0,25)}}</span>
                         <button class="btn secondary" onclick="this.closest('.card').classList.toggle('expanded')">Ver más</button>
-                        <a href="${s.url || '#'}" target="_blank" class="btn">PDF</a>
+                        <a href="${{s.url || '#'}}" target="_blank" class="btn">PDF</a>
                     </div>
                 </div>`;
-            }).join('') || '<p>No hay otras normas</p>';
+            }}).join('') || '<p>No hay otras normas</p>';
 
             const allNorms = [...(d.gastos || []), ...(d.sin_gastos || [])];
             let anexosTabHtml = '';
