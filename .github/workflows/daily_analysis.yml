@@ -72,6 +72,7 @@ jobs:
           echo "=== Staged changes ==="
           git status
           
-          # Commit and push
+          # Commit and push (with pull to handle concurrent changes)
           git diff --staged --quiet || git commit -m "📊 Reporte diario actualizado $(date +'%Y-%m-%d')"
-          git push || echo "Nothing to push"
+          git pull --rebase origin main || echo "Pull failed"
+          git push || echo "Push failed"
