@@ -109,8 +109,33 @@ def get_ai_summary_safe(client, prompt, system_prompt, max_chars=300):
     except:
         return None
 
+def extract_monto_from_detail(driver):
+    """Extract amount from licitación detail page."""
+    try:
+        # Look for the "Monto" text in the page
+        page_text = driver.page_source
+        # Common patterns for amounts in BAC
+        monto_patterns = [
+            r'Monto.*?\$\s*([\d.,]+)',
+            r'Monto del contrato.*?\$\s*([\d.,]+)',
+            r'\$\s*([\d]{1,3}(?:\.\d{3})*(?:,\d{2})?)'
+        ]
+        for pattern in monto_patterns:
+            match = re.search(pattern, page_text, re.IGNORECASE | re.DOTALL)
+            if match:
+                val_str = match.group(1).replace('.', '').replace(',', '.')
+                try:
+                    val = float(val_str)
+                    if val > 1000:  # Filter out small numbers that aren't amounts
+                        return val
+                except:
+                    continue
+        return None
+    except:
+        return None
+
 def scrape_licitaciones(fecha_hoy):
-    """Scrape Buenos Aires Compras - Multi-page"""
+    """Scrape Buenos Aires Compras - Multi-page with amount extraction"""
     print(f"\n🏛️ Scrapeando licitaciones de {fecha_hoy}...")
     licitaciones = []
     driver = None
@@ -133,8 +158,10 @@ def scrape_licitaciones(fecha_hoy):
         today_parts = fecha_hoy.split('/')
         today_str = f"{today_parts[0]}/{today_parts[1]}/{today_parts[2]}"
         
+        # First pass: collect basic info from list
+        temp_lics = []
         page_num = 1
-        while page_num <= 10:  # Max 10 pages
+        while page_num <= 5:  # Max 5 pages for list
             print(f"   📄 Página {page_num}...")
             try:
                 WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.ID, "ctl00_CPH1_GridListaPliegos")))
@@ -146,20 +173,22 @@ def scrape_licitaciones(fecha_hoy):
                         cols = row.find_elements(By.TAG_NAME, "td")
                         if len(cols) < 6: continue
                         if today_str in cols[3].text.strip():
+                            # Get the link to detail page
+                            link_elem = cols[0].find_element(By.TAG_NAME, "a")
+                            detail_url = link_elem.get_attribute("href")
                             numero = cols[0].text.strip()
-                            licitaciones.append({
+                            temp_lics.append({
                                 'numero': numero,
                                 'nombre': cols[1].text.strip(),
                                 'tipo': cols[2].text.strip(),
                                 'fecha': cols[3].text.strip().split()[0],
                                 'estado': cols[4].text.strip(),
                                 'unidad': cols[5].text.strip(),
-                                'url': f"https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id={numero}",
-                                'resumen_ia': f"{cols[2].text.strip()} - {cols[1].text.strip()}"
+                                'detail_url': detail_url,
+                                'url': f"https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id={numero}"
                             })
                     except: continue
                 
-                # Try next page
                 try:
                     next_link = driver.find_element(By.XPATH, f"//a[contains(@href,'Page${page_num + 1}')]")
                     driver.execute_script("arguments[0].click();", next_link)
@@ -170,13 +199,37 @@ def scrape_licitaciones(fecha_hoy):
             except:
                 break
         
-        print(f"   Total: {len(licitaciones)}")
+        print(f"   📋 Encontradas {len(temp_lics)} licitaciones. Extrayendo montos...")
+        
+        # Second pass: visit each detail page to get amount
+        for i, lic in enumerate(temp_lics):
+            try:
+                if lic.get('detail_url'):
+                    driver.get(lic['detail_url'])
+                    time.sleep(1.5)
+                    monto = extract_monto_from_detail(driver)
+                    if monto:
+                        lic['monto'] = monto
+                        lic['monto_fmt'] = f"${monto:,.2f}"
+                        print(f"     [{i+1}/{len(temp_lics)}] {lic['numero']}: ${monto:,.0f}")
+                    else:
+                        lic['monto_fmt'] = "Monto no especificado"
+                        print(f"     [{i+1}/{len(temp_lics)}] {lic['numero']}: Sin monto")
+            except Exception as e:
+                lic['monto_fmt'] = "Error extrayendo monto"
+            
+            lic['resumen_ia'] = f"{lic['tipo']} - {lic['nombre']}"
+            del lic['detail_url']  # Clean up
+            licitaciones.append(lic)
+        
+        print(f"   ✅ Total: {len(licitaciones)}")
         driver.quit()
         return licitaciones, True
     except Exception as e:
         print(f"⚠️ Scraping error: {e}")
         if driver: driver.quit()
         return [], False
+
 
 def main():
     os.makedirs(DATA_DIR, exist_ok=True)
@@ -509,56 +562,79 @@ def regenerate_html():
                 filter.appendChild(opt);
             }});
 
-            document.getElementById('gastosGrid').innerHTML = (d.gastos || []).map(g => {{
+            document.getElementById('gastosGrid').innerHTML = (d.gastos || []).map(g => {
                 const expensive = (g.monto || 0) > 100000000 ? 'expensive' : '';
-                return `<div class="card ${{expensive}}" data-org="${{g.organismo}}">
-                    <div class="amount">${{g.monto_fmt || '$0'}}</div>
-                    <div class="desc"><strong>${{g.resumen_corto || 'Sin título'}}</strong></div>
-                    <div class="desc-long">${{g.resumen_largo || g.sumario || ''}}</div>
+                const anexosHtml = (g.anexos || []).length > 0 
+                    ? `<div class="anexos-list" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bg-tertiary);">
+                        <small style="color:var(--text-secondary);">📎 Anexos:</small>
+                        ${(g.anexos || []).map(a => `<a href="${a.url}" target="_blank" class="tag" style="margin-left:4px;text-decoration:none;">${(a.nombre || 'Anexo').substring(0,20)}</a>`).join('')}
+                       </div>` 
+                    : '';
+                const resumenLargo = g.resumen_largo || g.sumario || g.text_snippet || 'Sin información adicional disponible.';
+                return `<div class="card ${expensive}" data-org="${g.organismo}">
+                    <div class="amount">${g.monto_fmt || '$0'}</div>
+                    <div class="desc"><strong>${g.resumen_corto || g.nombre || 'Sin título'}</strong></div>
+                    <div class="desc-long">${resumenLargo}${anexosHtml}</div>
                     <div class="meta">
-                        <span class="tag">${{(g.organismo || '').substring(0,25)}}</span>
+                        <span class="tag">${(g.organismo || '').substring(0,25)}</span>
                         <button class="btn secondary" onclick="this.closest('.card').classList.toggle('expanded')">Ver más</button>
-                        <a href="${{g.url || '#'}}" target="_blank" class="btn">PDF</a>
+                        <a href="${g.url || '#'}" target="_blank" class="btn">PDF</a>
                     </div>
                 </div>`;
-            }}).join('') || '<p>No hay gastos</p>';
+            }).join('') || '<p>No hay gastos</p>';
 
-            document.getElementById('licitacionesGrid').innerHTML = (d.licitaciones || []).map(l => {{
-                return `<div class="card">
-                    <div class="amount">${{l.monto_fmt || 'Monto no disponible'}}</div>
-                    <div class="desc"><strong>${{l.numero || ''}}</strong> - ${{l.nombre || ''}}</div>
-                    <div class="desc">${{l.resumen_ia || ''}}</div>
+            document.getElementById('licitacionesGrid').innerHTML = (d.licitaciones || []).map(l => {
+                const hasMonto = l.monto && l.monto > 0;
+                const montoClass = hasMonto ? (l.monto > 10000000 ? 'expensive' : '') : '';
+                const montoDisplay = l.monto_fmt || 'Monto no especificado';
+                return `<div class="card ${montoClass}">
+                    <div class="amount" style="${hasMonto ? '' : 'color:var(--text-secondary);font-size:0.9em;'}">${montoDisplay}</div>
+                    <div class="desc"><strong>${l.numero || ''}</strong> - ${l.nombre || ''}</div>
+                    <div class="desc" style="margin-top:5px;">${l.resumen_ia || ''}</div>
                     <div class="meta">
-                        <span class="tag">${{l.tipo || ''}}</span>
-                        <a href="${{l.url || '#'}}" target="_blank" class="btn">Ver en BAC</a>
+                        <span class="tag">${l.tipo || ''}</span>
+                        <span class="tag">${l.estado || ''}</span>
+                        <span class="tag">${(l.unidad || '').substring(0,25)}</span>
+                        <a href="${l.url || '#'}" target="_blank" class="btn">Ver Pliego en BAC</a>
                     </div>
                 </div>`;
-            }}).join('') || '<p>No hay licitaciones</p>';
+            }).join('') || '<p>No hay licitaciones para esta fecha</p>';
 
-            document.getElementById('otrosGrid').innerHTML = (d.sin_gastos || []).map(s => {{
-                return `<div class="card" data-org="${{s.organismo}}">
-                    <div class="desc"><strong>${{s.resumen_corto || s.nombre || ''}}</strong></div>
-                    <div class="desc-long">${{s.resumen_largo || s.sumario || ''}}</div>
+            document.getElementById('otrosGrid').innerHTML = (d.sin_gastos || []).map(s => {
+                const anexosHtml = (s.anexos || []).length > 0 
+                    ? `<div class="anexos-list" style="margin-top:8px;">
+                        <small style="color:var(--text-secondary);">📎 Anexos:</small>
+                        ${(s.anexos || []).map(a => `<a href="${a.url}" target="_blank" class="tag" style="margin-left:4px;text-decoration:none;">${(a.nombre || 'Anexo').substring(0,20)}</a>`).join('')}
+                       </div>` 
+                    : '';
+                const resumenLargo = s.resumen_largo || s.sumario || s.text_snippet || 'Sin información adicional.';
+                return `<div class="card" data-org="${s.organismo}">
+                    <div class="desc"><strong>${s.resumen_corto || s.nombre || ''}</strong></div>
+                    <div class="desc-long">${resumenLargo}${anexosHtml}</div>
                     <div class="meta">
-                        <span class="tag">${{(s.organismo || '').substring(0,25)}}</span>
+                        <span class="tag">${(s.organismo || '').substring(0,25)}</span>
                         <button class="btn secondary" onclick="this.closest('.card').classList.toggle('expanded')">Ver más</button>
-                        <a href="${{s.url || '#'}}" target="_blank" class="btn">PDF</a>
+                        <a href="${s.url || '#'}" target="_blank" class="btn">PDF</a>
                     </div>
                 </div>`;
-            }}).join('') || '<p>No hay otras normas</p>';
+            }).join('') || '<p>No hay otras normas</p>';
 
             const allNorms = [...(d.gastos || []), ...(d.sin_gastos || [])];
-            let anexosHtml = '';
+            let anexosTabHtml = '';
             allNorms.forEach(n => {{
                 (n.anexos || []).forEach(a => {{
-                    anexosHtml += `<div class="card">
+                    const resumen = a.resumen || 'Anexo de: ' + (n.nombre || 'Norma').substring(0,50);
+                    anexosTabHtml += `<div class="card">
                         <div class="desc"><strong>📄 ${{a.nombre || 'Anexo'}}</strong></div>
-                        <div class="desc">${{a.resumen || ''}}</div>
-                        <a href="${{a.url || '#'}}" target="_blank" class="btn">Descargar</a>
+                        <div class="desc" style="margin-top:5px;color:var(--text-secondary);">${{resumen}}</div>
+                        <div class="meta" style="margin-top:8px;">
+                            <span class="tag">De: ${{(n.organismo || 'Desconocido').substring(0,20)}}</span>
+                            <a href="${{a.url || '#'}}" target="_blank" class="btn">Descargar PDF</a>
+                        </div>
                     </div>`;
                 }});
             }});
-            document.getElementById('anexosGrid').innerHTML = anexosHtml || '<p>No hay anexos</p>';
+            document.getElementById('anexosGrid').innerHTML = anexosTabHtml || '<p>No hay anexos para esta fecha</p>';
 
             if (document.getElementById('tab-stats').classList.contains('active')) initChart();
         }}
