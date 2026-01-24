@@ -1,0 +1,564 @@
+{
+  "fecha": "2026-01-23",
+  "fecha_display": "23/01/2026",
+  "gastos": [
+    {
+      "nombre": "Resolución N° 12/SECD/26",
+      "sumario": "Autoriza la contratación de personal",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909713",
+      "tipo": "Resolución",
+      "organismo": "Jefatura de Gabinete de Ministros",
+      "anexos": [
+        {
+          "nombre": "PE-RES-MJGGC-SECD-12-26-ANX.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909558",
+          "resumen": "Anexo de: Resolución N° 12/SECD/26"
+        }
+      ],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 12/SECD/26 \n \nBuenos Aires, 21 de enero de 2026 \n \nVISTO: El Decreto 224/13 y modificatorios, la Resolución Conjunta 11-SECLYT/13 y \nsus modificatorias, la Resolución 4720-MHFGC/25, el Expediente Electrónico \n55303823-GCABA-DGINFRAES/25 y asociados, y \n \nCONSIDERANDO: \n \nQue por la presente actuación tramita la contratación de diversas personas, bajo la \nfigura de locación de servicios en el modo, forma y período que se detalla en e",
+      "monto": 711077772.0,
+      "monto_fmt": "$711,077,772.00",
+      "tiene_gasto": true,
+      "resumen_corto": "Aprobación de Medidas de Seguridad Urbana",
+      "resumen_largo": "Resolución 12/SECD/26: Medidas Culturales 2026"
+    },
+    {
+      "nombre": "Resolución N° 11/SECD/26",
+      "sumario": "Autoriza la contratación de personal",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909712",
+      "tipo": "Resolución",
+      "organismo": "Jefatura de Gabinete de Ministros",
+      "anexos": [
+        {
+          "nombre": "PE-RES-MJGGC-SECD-11-26-ANX.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909529",
+          "resumen": "Anexo de: Resolución N° 11/SECD/26"
+        }
+      ],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 11/SECD/26 \n \nBuenos Aires, 20 de enero de 2026 \n \nVISTO: El Decreto 224/13 y modificatorios, la Resolución Conjunta 11-SECLYT/13 y \nsus modificatorias, la Resolución 4720-MHFGC/25, el Expediente Electrónico \n55222312-GCABA-SECD/25 y asociados, y \n \nCONSIDERANDO: \n \nQue por la presente actuación tramita la contratación de diversas personas, bajo la \nfigura de locación de servicios en el modo, forma y período que se detalla en el Ane",
+      "monto": 492393288.0,
+      "monto_fmt": "$492,393,288.00",
+      "tiene_gasto": true,
+      "resumen_corto": "Implementación de Nuevas Políticas de Transporte Público",
+      "resumen_largo": "Aprobación de Medidas de Seguridad Urbana"
+    },
+    {
+      "nombre": "Resolución N° 5/COPIDIS/26",
+      "sumario": "Aprueba el incremento de la Licitación Pública N° 9611-1975-LPU24",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909709",
+      "tipo": "Resolución",
+      "organismo": "Vicejefatura de Gobierno",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 5/COPIDIS/26 \n \nBuenos Aires, 16 de enero de 2026 \n \nVISTO: Las Leyes 2.095, 6.684 y 6.851, los Decretos 387/23 y sus modificatorios, la \nDisposición 333-DGCYC/23, las Resoluciones 14/COPIDIS/24, 15/COPIDIS/24 y \n31/COPIDIS/24 y los Expedientes E X-2024-25649381-GCABA-COPIDIS y EX -2024-\n41409240-GCABA-DGTALAVJG, y \n \nCONSIDERANDO:",
+      "monto": 489365268.0,
+      "monto_fmt": "$489,365,268.00",
+      "tiene_gasto": true,
+      "resumen_corto": "30 años de la Constitución CABA 2026",
+      "resumen_largo": "Reconocimiento del 30° aniversario constitucional 2026"
+    }
+  ],
+  "sin_gastos": [
+    {
+      "nombre": "Resolución N° 153/SSGRH/26",
+      "sumario": "Transfiera a agente",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909717",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Hacienda y Finanzas",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 153/SSGRH/26 \n \nBuenos Aires, 19 de enero de 2026 \n \nVISTO: Las Leyes 471 (Texto Consolidado por la Ley 6.764) y 6.684, el Decreto \n580/16 y modificatorio, la Resolución 3880-GCABA- MHGC/16 y modificatoria 1658-\nGCABA-MEFGC/18, el Acta de Negociac ión Colectiva 17/13 y modificatoria, \ninstrumentada por Resoluciones 20-GCABA -MHGC/1",
+      "tiene_gasto": false,
+      "resumen_corto": "Celebración del 30° Aniversario Constitucional CABA",
+      "resumen_largo": "Conmemoración del 30° aniversario constitucional 2026"
+    },
+    {
+      "nombre": "Resolución N° 141/SSGRH/26",
+      "sumario": "Transfiera a agente",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909715",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Hacienda y Finanzas",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 141/SSGRH/26 \n \nBuenos Aires, 16 de enero de 2026 \n \nVISTO: Las Leyes 471 (Texto Consolidado por la Ley 6.764) y 6.684, el Decreto \n580/16 y modificatorio, la Resolución 3880-GCABA- MHGC/16 y modificatoria 1658-\nGCABA-MEFGC/18, el Acta de Negociac ión Colectiva 17/13 y modificatoria, \ninstrumentada por Resoluciones 20-GCABA -MHGC/1",
+      "tiene_gasto": false,
+      "resumen_corto": "Resolución 141: 30° Aniversario Constitucional 2026",
+      "resumen_largo": "Celebración del 30° Aniversario Constitucional de CABA"
+    },
+    {
+      "nombre": "Resolución N° 148/SSGRH/26",
+      "sumario": "Transfiera a agente",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909716",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Hacienda y Finanzas",
+      "anexos": [],
+      "text_snippet": " \nGobierno de  la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 148/SSGRH/26 \n \nBuenos Aires, 16 de enero de 2026 \n \nVISTO: Las Leyes 471 (Texto Consolidado por la Ley 6.764) y 6.684, el Decreto \n580/16 y modificatorio, la Resolución 3880-GCABA- MHGC/16 y modificatoria 1658-\nGCABA-MEFGC/18, el Acta de Negociac ión Colectiva 17/13 y modificatoria, \ninstrumentada por Resoluciones 20-GCABA -MHGC/",
+      "tiene_gasto": false,
+      "resumen_corto": "Conmemoración del 30° Aniversario Constitucional 2026",
+      "resumen_largo": "30° Aniversario de la Constitución CABA 2026"
+    },
+    {
+      "nombre": "Resolución N° 154/SSGRH/26",
+      "sumario": "Transfiera a agente",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909718",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Hacienda y Finanzas",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la C iudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 154/SSGRH/26 \n \nBuenos Aires, 19 de enero de 2026 \n \nVISTO: Las Leyes 471 (Texto Consolidado por la Ley 6.764) y 6.684, el Decreto \n580/16 y modificatorio, la Resolución 3880-GCABA- MHGC/16 y modificatoria 1658-\nGCABA-MEFGC/18, el Acta de Negociac ión Colectiva 17/13 y modificatoria, \ninstrumentada por Resoluciones 20-GCABA -MHGC/",
+      "tiene_gasto": false,
+      "resumen_corto": "Resolución 154/SSGRH/26: Conmemoración del 30° Aniversario",
+      "resumen_largo": "Celebración del 30° Aniversario Constitucional CABA 2026"
+    },
+    {
+      "nombre": "Resolución N° 14/ASINF/26",
+      "sumario": "Asigna Suplemento de Gabinete a agentes",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909710",
+      "tipo": "Resolución",
+      "organismo": "Jefatura de Gabinete de Ministros",
+      "anexos": [
+        {
+          "nombre": "PE-RES-MJGGC-ASINF-14-26-ANX.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909615",
+          "resumen": "Anexo de: Resolución N° 14/ASINF/26"
+        }
+      ],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 14/ASINF/26 \n \nBuenos Aires, 20 de enero de 2026 \n \nVISTO: Las Leyes Nros. 2.689 y 6.684 (Textos consolidados por Ley Nº 6.764) y su \nmodificatoria N° 6.851, el Decreto N° 387/23 y modificatorios, la Resolución Nº 446-\nMHGC/16 y modificatorias, el EX-2026-01483763-GCABA-ASINF, y \n \nCONSIDERANDO: \n \nQue por los presentes actuados tramita la asignación del Suplemento de Gabinete a \nlas personas que se detallan en el IF-2026-01868825-G",
+      "tiene_gasto": false,
+      "resumen_corto": "Implementación de Medidas de Seguridad 2026",
+      "resumen_largo": "Resolución 14/ASINF/26: Medidas Administrativas 2026"
+    },
+    {
+      "nombre": "Resolución N° 155/SSGRH/26",
+      "sumario": "Transfiera a agente",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909719",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Hacienda y Finanzas",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 155/SSGRH/26 \n \nBuenos Aires, 19 de enero de 2026 \n \nVISTO: Las Leyes 471 (Texto Consolidado por la Ley 6.764) y 6.684, el Decreto \n580/16 y modificatorio, la Resolución 3880-GCABA- MHGC/16 y modificatoria 1658-\nGCABA-MEFGC/18, el Acta de Negociac ión Colectiva 17/13 y modificatoria, \ninstrumentada por Resoluciones 20-GCABA -MHGC/1",
+      "tiene_gasto": false,
+      "resumen_corto": "Resolución 155/SSGRH/26: Celebración del 30° Aniversario Constitucional",
+      "resumen_largo": "Celebración del 30° Aniversario Constitucional CABA 2026"
+    },
+    {
+      "nombre": "Resolución N° 268/MHFGC/26",
+      "sumario": "Acepta la renuncia como Gerente Operativa de la Gerencia Operativa Análisis Modelado y Visualización de Datos presentada por Ana Victoria Carrasco Stanich",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909725",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Hacienda y Finanzas",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 268/MHFGC/26 \n \nBuenos Aires, 20 de enero de 2026 \n \nVISTO: Las Leyes 471 y 6.684 y modificatoria, los Decretos 684/09, 335/11, 571/11, \n387/23 y modificatorios, las Resoluciones 489-GCABA -MHFGC/25 y 6.891-GCABA -\nMHFGC/24, el Expediente EX-2026-04154988-GCABA-SECITD, y \n \nCONSIDERANDO: \n \nQue por la Ley 6.684 y modificatoria se s",
+      "tiene_gasto": false,
+      "resumen_corto": "finalAniversario 30° de la Constitución CABA 2026",
+      "resumen_largo": "Celebración del 30° Aniversario Constitucional CABA 2026"
+    },
+    {
+      "nombre": "Resolución N° 264/MHFGC/26",
+      "sumario": "Prorroga designaciones en el Programa de Especialistas Profesionales PEP de agentes",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909721",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Hacienda y Finanzas",
+      "anexos": [
+        {
+          "nombre": "PE-RES-MHFGC-MHFGC-264-26-ANX-1.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909611",
+          "resumen": "Anexo de: Resolución N° 264/MHFGC/26"
+        },
+        {
+          "nombre": "PE-RES-MHFGC-MHFGC-264-26-ANX.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909612",
+          "resumen": "Anexo de: Resolución N° 264/MHFGC/26"
+        }
+      ],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 264/MHFGC/26 \n \nBuenos Aires, 20 de enero de 2026 \n \nVISTO: Las Leyes 471 y 6.684 y su modificatoria Ley 6.851, los Decretos 387/23 y \nmodificatorios, y 289/24, las Resoluciones 2.291-MEFGC/18 y modificatoria, las \nResoluciones de Firma Conjunta 1.408-MHFGC/24 y modificatoria, y \n1.140/MHFGC/25, y la Resolución 7.361-MHFGC/24, las ",
+      "tiene_gasto": false,
+      "resumen_corto": "Celebración del 30° Aniversario Constitucional CABA 2026",
+      "resumen_largo": "Conmemoración del 30° Aniversario Constitucional 2026"
+    },
+    {
+      "nombre": "Resolución N° 287/MHFGC/26",
+      "sumario": "Designa a personal de Planta de Gabinete",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909727",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Hacienda y Finanzas",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n……………………………………………………………………………………………………………………………… …………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 287/MHFGC/26 \n \nBuenos Aires, 21 de enero de 2026 \n \nVISTO: Los Decretos 638/07 y modificatorios, 387/23 y modificatorios, y el Expediente \nEX-2026-04134869-GCABA-SSFIN, y \n \nCONSIDERANDO: \n \nQue por Decreto 638/07 y modificatorios, se delegó a los/as señores Ministros/as, \nSecretarios/as y Titulares de Unidades de Organización co",
+      "tiene_gasto": false,
+      "resumen_corto": "30° Aniversario de la Constitución CABA 2026",
+      "resumen_largo": "Celebración del 30° Aniversario de la Constitución"
+    },
+    {
+      "nombre": "Resolución N° 298/MSGC/26",
+      "sumario": "Prorroga la designación como Jefe de División Centro de Especialidades Médicas Ambulatorias de Referencia I (CEMAR I) de Pablo Daniel Presa",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909739",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Salud",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 298/MSGC/26 \n \nBuenos Aires, 20 de enero de 2026 \n \nVISTO: La Ley N° 6035, el Acta Paritaria N° 4/2019, instrumentada mediante \nResolución N° 4565/GCABA/MEFGC/2019, la Resolución Nº 2022-240-GCABA-\nMSGC, el Expediente N° 2026-03898715-GCABA-SSAPAC, y \n \nCONSIDERANDO: \n \nQue mediante la Resolución Nº 2022-240-GCABA- MSGC, se designó",
+      "tiene_gasto": false,
+      "resumen_corto": "Conmemoración del 30° Aniversario Constitucional en CABA",
+      "resumen_largo": "Conmemoración del 30° Aniversario Constitucional CABA 2026"
+    },
+    {
+      "nombre": "Resolución N° 306/MSGC/26",
+      "sumario": "Designa a personal de la Planta Permanente",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909746",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Salud",
+      "anexos": [
+        {
+          "nombre": "PE-RES-MSGC-MSGC-306-26-ANX-1.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909552",
+          "resumen": "Anexo de: Resolución N° 306/MSGC/26"
+        },
+        {
+          "nombre": "PE-RES-MSGC-MSGC-306-26-ANX.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909553",
+          "resumen": "Anexo de: Resolución N° 306/MSGC/26"
+        }
+      ],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 306/MSGC/26 \n \nBuenos Aires, 20 de enero de 2026 \n \nVISTO: Las Leyes Nº 471, 6684 (textos consolidados por Ley Nº 6764) y Ley 6767, el \nActa de Negociación Colectiva Nº 19/22 instrumentada por Resolución Nº 5620-\nGCABA-MHFGC/22, la Disposición N°  2025-106-GCABA-DGAYDRH, los Expedientes \nElectrónicos N° 2025-46958894-GCABA-DGAYDRH ",
+      "tiene_gasto": false,
+      "resumen_corto": "Conmemoración del 30° Aniversario Constitucional 2026",
+      "resumen_largo": "Conmemoración del 30° Aniversario Constitucional CABA 2026"
+    },
+    {
+      "nombre": "Resolución N° 312/MSGC/26",
+      "sumario": "Modifica la remuneración de personal de Planta de Gabinete",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909752",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Salud",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 312/MSGC/26 \n \nBuenos Aires, 20 de enero de 2026 \n \nVISTO: La Ley Nº 471, los Decretos Nros. 638/07, 387/23, la Resoluciones Nº 3634-\nGCABA-MSGC/24, y 5885-GCABA-MSGC/24, el Expediente Electrónico Nº 04146723-\nGCABA-DGAYDRH/26, y; \n \nCONSIDERANDO: \n \nQue por Decreto Nº 638/07 se delegó a los señores Ministros, Secretarios y titular",
+      "tiene_gasto": false,
+      "resumen_corto": "Conmemoración del 30° Aniversario Constitucional 2026",
+      "resumen_largo": "Conmemoración del 30° Aniversario Constitucional CABA 2026"
+    },
+    {
+      "nombre": "Resolución N° 313/MSGC/26",
+      "sumario": "Asigna Suplemento de Gabinete a Adriana Fabiana Villaverde",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909753",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Salud",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 313/MSGC/26 \n \nBuenos Aires, 20 de enero de 2026 \n \nVISTO: La Ley Nº 471, los Decretos Nros. 638/07 y 387/23, la Resolución Nº \n446/MHGC/16, y modificatorio, el Expediente Electrónico Nº 03596518-GCABA -\nDGAYDRH/26, y; \n \nCONSIDERANDO: \n \nQue por Decr eto Nº 638/07 se delegó a los señores Ministros, Secretarios y titulares \nde Unid",
+      "tiene_gasto": false,
+      "resumen_corto": "Conmemoración del 30° Aniversario Constitucional CABA 2026",
+      "resumen_largo": "Celebración del 30° Aniversario Constitucional CABA 2026"
+    },
+    {
+      "nombre": "Resolución N° 75/MEDGC/26",
+      "sumario": "Aprueba el Plan de Estudios de la Nueva Escuela Secundaria Bachillerato en Economía y Administración Alternativa B y autoriza su implementación en la Escuela de Educación Media N° 5 DE 10 Héroes de Malvinas",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909784",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Educación",
+      "anexos": [
+        {
+          "nombre": "PE-RES-MEDGC-MEDGC-75-26-ANX.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909624",
+          "resumen": "Anexo de: Resolución N° 75/MEDGC/26"
+        }
+      ],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 75/MEDGC/26 \n \nBuenos Aires, 20 de enero de 2026 \n \nVISTO: la Ley Nacional 26.206 y sus modificatorias, las Resoluciones del Consejo \nFederal de Educación 79/09 y 84/09, las Leyes 33, 898 (textos consolidados por Ley \n6.764) y 6.684 y su modificatoria, el Decreto 387/23 y sus modificatorios, las \nResoluciones 321/MEGC/15 y sus modificatorias, 2427/MEGC/15 y su modificatoria, \n1792/MEGC/16, 1597/MEGC/15, 105/SSPLINED/16, 1602/MEDGC/2",
+      "tiene_gasto": false,
+      "resumen_corto": "Lanzamiento de Iniciativas Educativas 2026",
+      "resumen_largo": "Implementación de Medidas de Salud Pública 2026"
+    },
+    {
+      "nombre": "Resolución N° 79/EATC/26",
+      "sumario": "Aprueba la contratación de personal",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909875",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Cultura",
+      "anexos": [
+        {
+          "nombre": "PE-RES-MCGC-EATC-79-26-ANX.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909687",
+          "resumen": "Anexo de: Resolución N° 79/EATC/26"
+        }
+      ],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 79/EATC/26 \n \nBuenos Aires, 19 de enero de 2026 \n \nVISTO: La Ley Nº 2855 (Texto consolidado por la Ley N° 6.764), el Decreto Nº 224-\nGCABA/13, por el Decreto N° 356/AJG/24, Resolución Conjunta Nº 11-SECLYT/13, y \nel Expediente Electrónico Nº-2026-3958752-GCABA-EATC y otros, y, \n \nCONSIDERANDO: \n \nQue la Ley N° 2.855, reglamentada p",
+      "tiene_gasto": false,
+      "resumen_corto": "Celebración del 30° Aniversario Constitucional en CABA",
+      "resumen_largo": "Conmemoración del 30° Aniversario Constitucional CABA 2026"
+    },
+    {
+      "nombre": "Resolución N° 80/EATC/26",
+      "sumario": "Aprueba la contratación de personal",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909876",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Cultura",
+      "anexos": [
+        {
+          "nombre": "PE-RES-MCGC-EATC-80-26-ANX.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909696",
+          "resumen": "Anexo de: Resolución N° 80/EATC/26"
+        }
+      ],
+      "text_snippet": " \nGobierno de  la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 80/EATC/26 \n \nBuenos Aires, 19 de enero de 2026 \n \nVISTO: La Ley Nº 2855 (Texto consolidado por la Ley N° 6.764), el Decreto Nº 224-\nGCABA/13, por el Decreto N° 356/AJG/24, Resolución Conjunta Nº 11-SECLYT/13, y \nel Expediente Electrónico Nº-2026-2885408-GCABA-DEEATC y otros, y, \n \nCONSIDERANDO: \n \nQue la Ley N° 2.855, reglamentad",
+      "tiene_gasto": false,
+      "resumen_corto": "Celebración del 30° Aniversario Constitucional en Buenos Aires",
+      "resumen_largo": "Conmemoración del 30° Aniversario Constitucional CABA 2026"
+    },
+    {
+      "nombre": "Resolución N° 16/MJGC/26",
+      "sumario": "Designa a personal de Planta de Gabinete",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909896",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Justicia",
+      "anexos": [
+        {
+          "nombre": "PE-RES-MJGC-MJGC-16-26-ANX.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909695",
+          "resumen": "Anexo de: Resolución N° 16/MJGC/26"
+        }
+      ],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 16/MJGC/26 \n \nBuenos Aires, 21 de enero de 2026 \n \nVISTO: La Ley 6.684 (texto consolidado por la Ley 6.764) y su modificatoria 6.851, los \nDecretos 387/23 y sus modificatorios y 488/25, la Resolución Conjunta 1-MJGGC/26, y \nel Expediente EX-2026-03878938-GCABA-MJGC, y \n \nCONSIDERANDO: \n \nQue por la Ley 6.684 se aprobó la Ley de Min",
+      "tiene_gasto": false,
+      "resumen_corto": "Celebración del 30° Aniversario de la Constitución CABA",
+      "resumen_largo": "Conmemoración del 30° Aniversario Constitucional en CABA"
+    },
+    {
+      "nombre": "Resolución N° 20/MJGC/26",
+      "sumario": "Designa a personal de Planta de Gabinete",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909899",
+      "tipo": "Resolución",
+      "organismo": "Ministerio de Justicia",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nRESOLUCIÓN N.º 20/MJGC/26 \n \nBuenos Aires, 21 de enero de 2026 \n \nVISTO: La Ley 6.684 (texto consolidado por la Ley 6.764) y su modificatoria 6.851, los \nDecretos 387/23 y 488/25, la Resolución Conjunta 1-MJGGC/26, y el Expediente \nElectrónico EX-2026-05079784-GCABA-MJGC, y \n \nCONSIDERANDO: \n \nQue por la Ley 6.684, se aprobó la Ley de Ministerios",
+      "tiene_gasto": false,
+      "resumen_corto": "Conmemoración del 30° Aniversario Constitucional en CABA",
+      "resumen_largo": "Celebración del 30° Aniversario Constitucional CABA 2026"
+    },
+    {
+      "nombre": "Disposición N° 23/DGSPCB/26",
+      "sumario": "Renueva la habilitación concedida para prestar servicios de seguridad privada a la empresa Segurplus SRL",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909927",
+      "tipo": "Disposición",
+      "organismo": "Ministerio de Seguridad",
+      "anexos": [],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n“2026 - Año del 30° Aniversario de la sanción de la Constitución de la Ciudad Autónoma de Buenos Aires” \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nDISPOSICIÓN N.º 23/DGSPCB/26 \n \nBuenos Aires, 20 de enero de 2026 \n \nVISTO: Las Leyes N° 5688/16 (texto consolidado mediante Ley 6764) y N° 6812/2025 \n(B.O. 7162), los Decretos N° 446/06 y N° 394/14, las Disposiciones N° 122-\nDGSSP/2003, N° 337- DGSSP/2004, N° 231- DGSSP/2005, N° 232- DGSP/2006, N° \n369-DGSPR/2007, N° 260-DGSPR/2009, N° 249-DGSPR",
+      "tiene_gasto": false,
+      "resumen_corto": "Disposición para el 30° Aniversario Constitucional CABA",
+      "resumen_largo": "Disposición 23 para el 30° Aniversario Constitucional"
+    },
+    {
+      "nombre": "Disposición N° 4/DGARE/26",
+      "sumario": "Deja sin efecto la Disposición N° 60-DGJRYM/17 y aprueba el Circuito administrativo del Registro de Notarios",
+      "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909948",
+      "tipo": "Disposición",
+      "organismo": "Ministerio de Justicia",
+      "anexos": [
+        {
+          "nombre": "PE-DIS-MJGC-DGARE-4-26-ANX.pdf",
+          "url": "http://api-restboletinoficial.buenosaires.gob.ar/download/4909682",
+          "resumen": "Anexo de: Disposición N° 4/DGARE/26"
+        }
+      ],
+      "text_snippet": " \nGobierno de la Ciudad Autónoma de Buenos Aires  \n \n \n \n…………………………………………………………………………………………………………………………………………………………………………………………………………………………………  \n \n \nDISPOSICIÓN N.º 4/DGARE/26 \n \nBuenos Aires, 15 de enero de 2026 \n \nVISTO: La Ley Orgánica Notarial 404 (texto consolidado por Ley 6.764) y su Decreto \nReglamentario 1624/00, los Decretos 387/23 y 495/23, la Disposición 60/DGJRYM/17, \ny; \n \nCONSIDERANDO: \n \nQue la Ley Orgánica Notarial 404, regula el ejercicio de la función notarial y de la \nprofesión de escribano, y organiza su desempeño en el ámbito de la Ciudad Autónoma \nde Buenos Aires; \nQue me",
+      "tiene_gasto": false,
+      "resumen_corto": "Implementación de Nuevas Políticas Ambientales 2026",
+      "resumen_largo": "Disposición 4 DGARE para el 30° Aniversario"
+    }
+  ],
+  "licitaciones": [
+    {
+      "numero": "3201-0022-CDI26",
+      "nombre": "Servicio de contratación de espacio físico en la Fiesta Nacional de Doma y Folklore",
+      "tipo": "Contratación Directa",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "3201 - Ente de Turismo",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=3201-0022-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - Servicio de contratación de espacio físico en la Fiesta Nacional de Doma y Folklore"
+    },
+    {
+      "numero": "416-4214-CME25",
+      "nombre": "PRÓTESIS MAMARIA - PEDIDO 41446 - PTE. VALDEZ NORMA - ABAST. INMEDIATO",
+      "tipo": "Contratación Menor",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "416 - HTAL. CARLOS G. DURAND",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=416-4214-CME25",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - PRÓTESIS MAMARIA - PEDIDO 41446 - PTE. VALDEZ NORMA - ABAST. INMEDIATO"
+    },
+    {
+      "numero": "416-4217-CME25",
+      "nombre": "MANTENIMIENTO DE DIGITALIZADOR DE PELICULAS RADIOGRAFICAS - PED. 41420 - ABAST. 12 MESES",
+      "tipo": "Contratación Menor",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "416 - HTAL. CARLOS G. DURAND",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=416-4217-CME25",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - MANTENIMIENTO DE DIGITALIZADOR DE PELICULAS RADIOGRAFICAS - PED. 41420 - ABAST. 12 MESES"
+    },
+    {
+      "numero": "3202-1965-CDI25",
+      "nombre": "Servicio de soporte del sist. centralizado de cámaras de seg. y de los sensores tecnológicos de seg.",
+      "tipo": "Contratación Directa",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "3202 - Ministerio de Seguridad",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=3202-1965-CDI25",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - Servicio de soporte del sist. centralizado de cámaras de seg. y de los sensores tecnológicos de seg."
+    },
+    {
+      "numero": "427-0045-LPU26",
+      "nombre": "Servicio de Manteminiento Integral de Equipo de Esterilización",
+      "tipo": "Licitación Pública",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "427 - HTAL. IGNACIO PIROVANO",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=427-0045-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - Servicio de Manteminiento Integral de Equipo de Esterilización"
+    },
+    {
+      "numero": "8618-0009-LPU26",
+      "nombre": "Servicio de Extensión Garantía equip. conectividad inalámbrica y seguridad AGIP",
+      "tipo": "Licitación Pública",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "8618 - ADMINIST. GUBERNAMENTAL DE INGRESOS PUBLICOS",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=8618-0009-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - Servicio de Extensión Garantía equip. conectividad inalámbrica y seguridad AGIP"
+    },
+    {
+      "numero": "8618-0053-LPU26",
+      "nombre": "Servicio de Extensión de licencia para software Hipervisor VMware para la AGIP",
+      "tipo": "Licitación Pública",
+      "fecha": "23/01/2026",
+      "estado": "En Evaluacion",
+      "unidad": "8618 - ADMINIST. GUBERNAMENTAL DE INGRESOS PUBLICOS",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=8618-0053-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - Servicio de Extensión de licencia para software Hipervisor VMware para la AGIP"
+    },
+    {
+      "numero": "420-0036-CME26",
+      "nombre": "Solución de Sodio",
+      "tipo": "Contratación Menor",
+      "fecha": "23/01/2026",
+      "estado": "Desierto",
+      "unidad": "420 - HTAL. RICARDO GUTIERREZ",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=420-0036-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - Solución de Sodio"
+    },
+    {
+      "numero": "430-0077-CME26",
+      "nombre": "FILTROS ANTIBACTERIANOS - NEUMOTISIOLOGIA",
+      "tipo": "Contratación Menor",
+      "fecha": "23/01/2026",
+      "estado": "En Evaluacion",
+      "unidad": "430 - HTAL. JOSE M.RAMOS MEJIA",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=430-0077-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - FILTROS ANTIBACTERIANOS - NEUMOTISIOLOGIA"
+    },
+    {
+      "numero": "420-0023-CDI26",
+      "nombre": "Cannabidiol",
+      "tipo": "Contratación Directa",
+      "fecha": "23/01/2026",
+      "estado": "En Evaluacion",
+      "unidad": "420 - HTAL. RICARDO GUTIERREZ",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=420-0023-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - Cannabidiol"
+    },
+    {
+      "numero": "430-0028-CDI26",
+      "nombre": "AUTO CPAP - PTE. BOCCO OSCAR - NEUMOTISIOLOGIA",
+      "tipo": "Contratación Directa",
+      "fecha": "23/01/2026",
+      "estado": "En Evaluacion",
+      "unidad": "430 - HTAL. JOSE M.RAMOS MEJIA",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=430-0028-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - AUTO CPAP - PTE. BOCCO OSCAR - NEUMOTISIOLOGIA"
+    },
+    {
+      "numero": "427-0097-CME26",
+      "nombre": "Alquiler Equipo Potenciales Evocados, paciente: C. Frias",
+      "tipo": "Contratación Menor",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "427 - HTAL. IGNACIO PIROVANO",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=427-0097-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - Alquiler Equipo Potenciales Evocados, paciente: C. Frias"
+    },
+    {
+      "numero": "427-0099-CME26",
+      "nombre": "Adquisición de Metotrexate. Pte: T. Arias",
+      "tipo": "Contratación Menor",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "427 - HTAL. IGNACIO PIROVANO",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=427-0099-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - Adquisición de Metotrexate. Pte: T. Arias"
+    },
+    {
+      "numero": "418-0033-CDI26",
+      "nombre": "CARDIOLOGIA- ADQ. CARDIODESFIBRILADOR SUBCUTANEO (PCTE: AVILA, LEONEL)",
+      "tipo": "Contratación Directa",
+      "fecha": "23/01/2026",
+      "estado": "En Evaluacion",
+      "unidad": "418 - HTAL. JUAN A. FERNANDEZ",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=418-0033-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - CARDIOLOGIA- ADQ. CARDIODESFIBRILADOR SUBCUTANEO (PCTE: AVILA, LEONEL)"
+    },
+    {
+      "numero": "436-0015-LPU26",
+      "nombre": "ADQUISICIÓN DE MÁQUINA BLISTERA",
+      "tipo": "Licitación Pública",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "436 - TALLERES PROTEGIDOS DE REHAB.PSIQUIAT.",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=436-0015-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - ADQUISICIÓN DE MÁQUINA BLISTERA"
+    },
+    {
+      "numero": "418-0031-CDI26",
+      "nombre": "TRAUMATOLOGIA. ADQ. MATRIZ DERMICA BI CAPA. PCTE. LEDESMA MAGALI",
+      "tipo": "Contratación Directa",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "418 - HTAL. JUAN A. FERNANDEZ",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=418-0031-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - TRAUMATOLOGIA. ADQ. MATRIZ DERMICA BI CAPA. PCTE. LEDESMA MAGALI"
+    },
+    {
+      "numero": "418-0034-CDI26",
+      "nombre": "NEUROCIRUGIA. ALQUILER EQUIPO GENERADOR DE RADIOFRECUENCIA Y OTROS. PCTE CABELLERO CLAUDIO, FATIMA",
+      "tipo": "Contratación Directa",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "418 - HTAL. JUAN A. FERNANDEZ",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=418-0034-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - NEUROCIRUGIA. ALQUILER EQUIPO GENERADOR DE RADIOFRECUENCIA Y OTROS. PCTE CABELLERO CLAUDIO, FATIMA"
+    },
+    {
+      "numero": "418-0030-CDI26",
+      "nombre": "NEUROCIRUGIA. ALQUILER DE NEURONAVEGADOR Y MATRIZ HEMOSTATICA. PCTE. BOGADO MIRTA",
+      "tipo": "Contratación Directa",
+      "fecha": "23/01/2026",
+      "estado": "En Apertura",
+      "unidad": "418 - HTAL. JUAN A. FERNANDEZ",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=418-0030-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - NEUROCIRUGIA. ALQUILER DE NEURONAVEGADOR Y MATRIZ HEMOSTATICA. PCTE. BOGADO MIRTA"
+    }
+  ],
+  "organismos": [
+    "Jefatura de Gabinete de Ministros",
+    "Vicejefatura de Gobierno"
+  ]
+}
