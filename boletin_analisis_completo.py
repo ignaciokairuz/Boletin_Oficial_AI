@@ -331,50 +331,72 @@ def main():
             with open(data_file, 'w', encoding='utf-8') as f: 
                 json.dump(existing_data, f, indent=2, ensure_ascii=False)
 
-    # ============ PARALLEL AI SUMMARIES ============
+    # ============ SEQUENTIAL AI SUMMARIES (thread-safe) ============
     if pending_state.get('resumenes_pendientes'):
-        print(f"\n🤖 Generando resúmenes IA en PARALELO ({AI_WORKERS} workers)...")
+        print(f"\n🤖 Generando resúmenes IA (SECUENCIAL para evitar corrupción)...")
         
         try:
             client = Client("amd/gpt-oss-120b-chatbot")
             CORTO = "Responde SOLO con un título de 5-8 palabras."
             LARGO = "Explica en 4 oraciones sencillas qué se compra/hace y para qué."
             
-            # Prepare all items needing summaries
-            items_to_process = []
-            for g in existing_data['gastos']:
-                if not g.get('resumen_corto'):
-                    items_to_process.append(('gasto', g))
-            for s in existing_data['sin_gastos'][:50]:
-                if not s.get('resumen_corto'):
-                    items_to_process.append(('norma', s))
+            # Process GASTOS one by one
+            total_gastos = len(existing_data['gastos'])
+            for i, g in enumerate(existing_data['gastos']):
+                if g.get('resumen_corto') and len(g['resumen_corto']) > 10:
+                    continue  # Already has good summary
+                
+                # Use unique content for each gasto
+                prompt = f"{g.get('nombre', '')}\\n{g.get('text_snippet', g.get('sumario', ''))[:250]}"
+                
+                try:
+                    corto = get_ai_summary_safe(client, prompt, CORTO, 250)
+                    time.sleep(0.5)  # Rate limiting
+                    largo = get_ai_summary_safe(client, prompt, LARGO, 250)
+                    
+                    if corto and len(corto) > 5:
+                        g['resumen_corto'] = corto
+                        g['resumen_largo'] = largo if largo else g.get('sumario', '')[:300]
+                    else:
+                        g['resumen_corto'] = g.get('nombre', '')[:80] or "Sin resumen"
+                        g['resumen_largo'] = g.get('sumario', '')[:300]
+                except Exception as e:
+                    g['resumen_corto'] = g.get('nombre', '')[:80] or "Sin resumen"
+                    g['resumen_largo'] = g.get('sumario', '')[:300]
+                
+                if (i+1) % 10 == 0:
+                    print(f"   Gastos: {i+1}/{total_gastos}")
+                    # Save progress every 10 items
+                    with open(data_file, 'w', encoding='utf-8') as f: 
+                        json.dump(existing_data, f, indent=2, ensure_ascii=False)
             
-            def process_ai_item(item_tuple):
-                tipo, item = item_tuple
-                prompt = f"{item['nombre']}\n{item.get('text_snippet', item.get('sumario', ''))[:250]}"
-                corto = get_ai_summary_safe(client, prompt, CORTO, 250)
-                largo = get_ai_summary_safe(client, prompt, LARGO, 250)
-                return tipo, item, corto, largo
+            # Process SIN_GASTOS (otras normas)
+            total_normas = min(50, len(existing_data['sin_gastos']))
+            for i, s in enumerate(existing_data['sin_gastos'][:50]):
+                if s.get('resumen_corto') and len(s['resumen_corto']) > 10:
+                    continue
+                
+                prompt = f"{s.get('nombre', '')}\\n{s.get('text_snippet', s.get('sumario', ''))[:250]}"
+                
+                try:
+                    corto = get_ai_summary_safe(client, prompt, CORTO, 250)
+                    time.sleep(0.5)
+                    largo = get_ai_summary_safe(client, prompt, LARGO, 250)
+                    
+                    if corto and len(corto) > 5:
+                        s['resumen_corto'] = corto
+                        s['resumen_largo'] = largo if largo else s.get('sumario', '')[:300]
+                    else:
+                        s['resumen_corto'] = s.get('nombre', '')[:80] or "Sin resumen"
+                        s['resumen_largo'] = s.get('sumario', '')[:300]
+                except:
+                    s['resumen_corto'] = s.get('nombre', '')[:80] or "Sin resumen"
+                    s['resumen_largo'] = s.get('sumario', '')[:300]
+                
+                if (i+1) % 10 == 0:
+                    print(f"   Normas: {i+1}/{total_normas}")
             
-            print(f"   Procesando {len(items_to_process)} items...")
-            with ThreadPoolExecutor(max_workers=AI_WORKERS) as executor:
-                futures = [executor.submit(process_ai_item, it) for it in items_to_process]
-                done = 0
-                for future in as_completed(futures):
-                    done += 1
-                    if done % 10 == 0:
-                        print(f"   AI Progreso: {done}/{len(items_to_process)}")
-                    try:
-                        tipo, item, corto, largo = future.result()
-                        if corto:
-                            item['resumen_corto'] = corto
-                            item['resumen_largo'] = largo or item.get('sumario', '')[:300]
-                        else:
-                            item['resumen_corto'] = item.get('sumario', '')[:80] or "Sin resumen"
-                            item['resumen_largo'] = item.get('sumario', '')[:300]
-                    except: pass
-            
-            # Anexos (parallel but limited)
+            # Anexos (also sequential)
             print("   📎 Procesando anexos...")
             all_anexos = []
             for n in existing_data['gastos'] + existing_data['sin_gastos']:
@@ -382,21 +404,17 @@ def main():
                     if not a.get('resumen') or "Anexo de:" in a.get('resumen', ''):
                         all_anexos.append((n, a))
             
-            def process_anexo_ai(item_tuple):
-                norm, anexo = item_tuple
-                txt = process_anexo_parallel(anexo)
-                if txt:
-                    res = get_ai_summary_safe(client, f"Resume: {txt}", "1 oración simple", 200)
-                    return anexo, res if res else f"Anexo de: {norm.get('nombre')[:50]}"
-                return anexo, f"Anexo de: {norm.get('nombre')[:50]}"
-            
-            with ThreadPoolExecutor(max_workers=AI_WORKERS) as executor:
-                futures = [executor.submit(process_anexo_ai, it) for it in all_anexos[:100]]
-                for future in as_completed(futures):
-                    try:
-                        anexo, resumen = future.result()
-                        anexo['resumen'] = resumen
-                    except: pass
+            for i, (norm, anexo) in enumerate(all_anexos[:50]):
+                try:
+                    txt = process_anexo_parallel(anexo)
+                    if txt and len(txt) > 20:
+                        res = get_ai_summary_safe(client, f"Resume brevemente: {txt}", "1 oración simple", 200)
+                        anexo['resumen'] = res if res else f"Anexo de: {norm.get('nombre', '')[:50]}"
+                    else:
+                        anexo['resumen'] = f"Anexo de: {norm.get('nombre', '')[:50]}"
+                except:
+                    anexo['resumen'] = f"Anexo de: {norm.get('nombre', '')[:50]}"
+                time.sleep(0.3)
             
             pending_state['resumenes_pendientes'] = False
             print("   ✅ Resúmenes completados")
