@@ -375,8 +375,18 @@ def main():
         
         try:
             client = Client("amd/gpt-oss-120b-chatbot")
-            CORTO = "Responde SOLO con un título de 5-8 palabras."
-            LARGO = "Explica en 4 oraciones sencillas qué se compra/hace y para qué."
+            # Improved prompts for more descriptive summaries
+            CORTO = """Genera un título descriptivo de 10-15 palabras que explique QUÉ se compra o contrata.
+Ignora números de resolución, expedientes y decretos. 
+Enfócate en: qué producto/servicio se adquiere, para qué organismo es.
+NO uses 'Ver documento' ni referencias legales. Ejemplo: 'Compra de computadoras para escuelas públicas del distrito norte'"""
+            
+            LARGO = """Explica en 3-4 oraciones simples para un ciudadano común:
+1) Qué se compra o contrata exactamente
+2) Para qué organismo o área del gobierno es
+3) Cuál es el propósito o para qué se usará
+4) Si hay detalles relevantes (cantidades, ubicaciones, plazos)
+NO menciones números de resolución/expediente. Usa lenguaje sencillo."""
             
             # Process GASTOS one by one
             total_gastos = len(existing_data['gastos'])
