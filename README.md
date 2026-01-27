@@ -15,3 +15,5 @@ Eso es lo que viene a hacer esta web
 Toda sugerencia para una mejora es bienvenida!!
 
 La web contiene datos tanto del boletin oficial como del portal de compras del GCBA
+
+Extras en el futuro : Fallos judiciales + Auditorías + Tab de contrataciones por separado
