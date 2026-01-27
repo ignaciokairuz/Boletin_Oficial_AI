@@ -278,7 +278,10 @@ def main():
     try:
         response = requests.get(API_URL, timeout=30)
         data = response.json()
-    except: return
+        print(f"   ✅ API OK")
+    except Exception as e:
+        print(f"   ❌ API Error: {e}")
+        return
 
     boletin = data.get('boletin', {})
     fecha_raw = boletin.get('fecha_publicacion', '?')
@@ -304,6 +307,8 @@ def main():
     
     # Check for command line flags
     force_resumenes = '--force-resumenes' in sys.argv
+    print(f"   Args: {sys.argv}")
+    print(f"   Force resumenes: {force_resumenes}")
     fecha_override = None
     for arg in sys.argv:
         if arg.startswith('--fecha='):
@@ -332,7 +337,9 @@ def main():
             json.dump(pending_state, f, ensure_ascii=False)
             
     if existing_data and not pending_state:
-        print("✅ Día completo. Regenerando HTML.")
+        print("✅ Día completo - no hay trabajo pendiente.")
+        print("   💡 Para regenerar resúmenes, ejecutar con --force-resumenes")
+        print("   💡 O marcar checkbox 'Regenerar TODOS los resúmenes AI' en GitHub Actions")
         regenerate_html()
         return
 
