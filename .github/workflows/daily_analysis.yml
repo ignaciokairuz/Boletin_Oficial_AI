@@ -9,6 +9,16 @@ on:
     - cron: '0 17 * * 1-5'  # 14:00 PM Argentina (17:00 UTC)
     - cron: '0 18 * * 1-5'  # 15:00 PM Argentina (18:00 UTC)
   workflow_dispatch:
+    inputs:
+      force_regenerate:
+        description: 'Regenerar TODOS los resúmenes AI (borrar existentes)'
+        required: false
+        type: boolean
+        default: false
+      fecha:
+        description: 'Fecha específica (YYYY-MM-DD) - dejar vacío para hoy'
+        required: false
+        type: string
 
 # Evitar superposición de ejecuciones
 concurrency:
@@ -39,7 +49,16 @@ jobs:
 
       - name: Ejecutar Análisis (puede tardar unos minutos)
         run: |
-          python boletin_analisis_completo.py
+          ARGS=""
+          if [ "${{ github.event.inputs.force_regenerate }}" = "true" ]; then
+            ARGS="$ARGS --force-resumenes"
+            echo "🔄 Forzando regeneración de resúmenes..."
+          fi
+          if [ -n "${{ github.event.inputs.fecha }}" ]; then
+            ARGS="$ARGS --fecha=${{ github.event.inputs.fecha }}"
+            echo "📅 Procesando fecha: ${{ github.event.inputs.fecha }}"
+          fi
+          python boletin_analisis_completo.py $ARGS
 
       - name: Upload debug screenshots if any
         if: always()

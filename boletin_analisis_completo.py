@@ -12,6 +12,7 @@ import io
 import re
 import time
 import os
+import sys
 from datetime import datetime
 from pypdf import PdfReader
 from gradio_client import Client
@@ -301,8 +302,34 @@ def main():
     if os.path.exists(pending_file):
         with open(pending_file, 'r', encoding='utf-8') as f: pending_state = json.load(f)
     
+    # Check for command line flags
+    force_resumenes = '--force-resumenes' in sys.argv
+    fecha_override = None
+    for arg in sys.argv:
+        if arg.startswith('--fecha='):
+            fecha_override = arg.split('=')[1]
+    
     if existing_data and len(existing_data.get('licitaciones', [])) == 0:
         pending_state['licitaciones_necesarias'] = True
+    
+    # If force-resumenes, clear existing summaries to trigger regeneration
+    if existing_data and force_resumenes:
+        print("🔄 FORZANDO regeneración de resúmenes...")
+        for g in existing_data.get('gastos', []):
+            g['resumen_corto'] = ''
+            g['resumen_largo'] = ''
+        for s in existing_data.get('sin_gastos', []):
+            s['resumen_corto'] = ''
+            s['resumen_largo'] = ''
+        for n in existing_data.get('gastos', []) + existing_data.get('sin_gastos', []):
+            for a in n.get('anexos', []):
+                a['resumen'] = ''
+        pending_state['resumenes_pendientes'] = True
+        # Save the cleared data
+        with open(data_file, 'w', encoding='utf-8') as f:
+            json.dump(existing_data, f, indent=2, ensure_ascii=False)
+        with open(pending_file, 'w', encoding='utf-8') as f:
+            json.dump(pending_state, f, ensure_ascii=False)
             
     if existing_data and not pending_state:
         print("✅ Día completo. Regenerando HTML.")
