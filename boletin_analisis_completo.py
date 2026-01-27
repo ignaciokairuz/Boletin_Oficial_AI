@@ -50,6 +50,44 @@ def extract_amounts(text):
         except: continue
     return amounts
 
+def strip_header_boilerplate(text):
+    """Remove official year header that appears in ALL government documents.
+    These headers confuse the AI and cause it to summarize the header instead of content."""
+    if not text:
+        return ""
+    
+    # Common header patterns to remove
+    boilerplate_patterns = [
+        # 2026 year header
+        r'(?:Se declara |Declárase )?2026\s*[-–—]?\s*["""]?Año del 30[°º]?\s*Aniversario[^.]*\.',
+        r'Año del 30[°º]?\s*Aniversario de la (?:sanción de la )?Constitución[^.]*\.',
+        r'30[°º]?\s*Aniversario de la Constitución de la Ciudad[^.]*\.',
+        # General boilerplate
+        r'N[°º]\s*\d+[-/]\d+[-/]\d+\s*G\.?C\.?A?\.?B\.?A\.?',
+        r'Boletín Oficial de la Ciudad[^.]*\.',
+        r'Buenos Aires,?\s+\d{1,2}\s+de\s+\w+\s+de\s+202\d',
+        # Reference headers
+        r'VISTO[:\s]+(?:el|la|los|las)?[^,]{0,100},',
+    ]
+    
+    result = text
+    for pattern in boilerplate_patterns:
+        result = re.sub(pattern, ' ', result, flags=re.IGNORECASE | re.DOTALL)
+    
+    # Remove excessive whitespace
+    result = re.sub(r'\s+', ' ', result).strip()
+    
+    # Skip the first 50 chars if they still contain anniversary text
+    if 'aniversario' in result[:100].lower() or 'constitución' in result[:100].lower():
+        # Find the first sentence that looks like actual content
+        sentences = result.split('.')
+        for i, s in enumerate(sentences):
+            if len(s) > 30 and 'aniversario' not in s.lower() and 'constitución' not in s.lower():
+                result = '. '.join(sentences[i:])
+                break
+    
+    return result
+
 def clean_ai_response(text):
     if not text: return ""
     if "Error code:" in text or "BadRequestError" in text: return "Ver documento"
@@ -346,8 +384,10 @@ def main():
                 if g.get('resumen_corto') and len(g['resumen_corto']) > 10:
                     continue  # Already has good summary
                 
-                # Use unique content for each gasto
-                prompt = f"{g.get('nombre', '')}\\n{g.get('text_snippet', g.get('sumario', ''))[:250]}"
+                # Use unique content for each gasto - strip boilerplate headers
+                raw_text = g.get('text_snippet', g.get('sumario', ''))
+                clean_text = strip_header_boilerplate(raw_text)[:250]
+                prompt = f"{g.get('nombre', '')}\n{clean_text}"
                 
                 try:
                     corto = get_ai_summary_safe(client, prompt, CORTO, 250)
@@ -376,7 +416,9 @@ def main():
                 if s.get('resumen_corto') and len(s['resumen_corto']) > 10:
                     continue
                 
-                prompt = f"{s.get('nombre', '')}\\n{s.get('text_snippet', s.get('sumario', ''))[:250]}"
+                raw_text = s.get('text_snippet', s.get('sumario', ''))
+                clean_text = strip_header_boilerplate(raw_text)[:250]
+                prompt = f"{s.get('nombre', '')}\n{clean_text}"
                 
                 try:
                     corto = get_ai_summary_safe(client, prompt, CORTO, 250)
