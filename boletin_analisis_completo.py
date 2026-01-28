@@ -113,6 +113,16 @@ def clean_ai_response(text):
         "necesitaría más",
         "Para poder describir en tres o cuatro frases",
         "necesito que me indiques cuál es el bien",
+        # v20: Prompt leakage detection
+        "according to developer",
+        "developer instruction",
+        "we must provide",
+        "following the rules",
+        "as instructed",
+        "provide similar summary",
+        "no questions",
+        "REGLAS CRÍTICAS",
+        "TAREA:",
     ]
     
     lower_result = result.lower()
@@ -446,32 +456,21 @@ def main():
         try:
             client = Client("amd/gpt-oss-120b-chatbot")
             
-            # v19: AGGRESSIVE prompts that PREVENT meta-responses
-            CORTO = """TAREA: Genera un título de 10-15 palabras describiendo el gasto.
+            # v20: DIFFERENTIATED prompts - CORTO is short title, LARGO is detailed explanation
+            CORTO = """Genera un TÍTULO CORTO de máximo 8 palabras.
+Solo un titular tipo diario, sin puntos ni explicaciones.
+NO repitas instrucciones. NO hagas preguntas.
+Ejemplo: "Compra de computadoras para Educación"
+Responde SOLO el título."""
 
-REGLAS CRÍTICAS:
-- NUNCA pidas más información
-- NUNCA hagas preguntas
-- NUNCA digas "necesito saber", "podrías especificar", etc.
-- SIEMPRE genera un título aunque la info sea incompleta
-- Si no hay suficiente info, usa el tipo de documento y organismo
-- NO uses "Ver documento" nunca
+            LARGO = """Escribe un PÁRRAFO EXPLICATIVO de 3-4 oraciones detallando:
+- Qué se compra o contrata específicamente
+- Qué organismo lo solicita y para qué área
+- Cuál es el objetivo o uso previsto
+- Monto aproximado si está disponible
 
-EJEMPLO: "Licitación de obras de infraestructura para la Dirección de Salud"
-
-RESPONDE SOLO CON EL TÍTULO, nada más."""
-
-            LARGO = """TAREA: Resume en 3-4 oraciones qué es este gasto del gobierno.
-
-REGLAS CRÍTICAS:
-- NUNCA pidas más información
-- NUNCA hagas preguntas al usuario
-- NUNCA uses frases como "necesito que me indiques", "¿podrías especificar?"
-- SIEMPRE genera un resumen con la información disponible
-- Si falta info, escribe lo que SÍ puedes deducir del texto
-- Describe: qué se contrata, para qué área, propósito general
-
-RESPONDE SOLO CON EL RESUMEN, sin preguntas ni aclaraciones."""
+NO repitas las instrucciones. NO hagas preguntas.
+Escribe directamente el párrafo explicativo."""
             
             # Process GASTOS one by one
             total_gastos = len(existing_data['gastos'])
