@@ -463,14 +463,16 @@ NO repitas instrucciones. NO hagas preguntas.
 Ejemplo: "Compra de computadoras para Educación"
 Responde SOLO el título."""
 
-            LARGO = """Escribe un PÁRRAFO EXPLICATIVO de 3-4 oraciones detallando:
-- Qué se compra o contrata específicamente
-- Qué organismo lo solicita y para qué área
-- Cuál es el objetivo o uso previsto
-- Monto aproximado si está disponible
+            LARGO = """Escribe un RESUMEN DETALLADO con exactamente 5 oraciones informativas:
 
-NO repitas las instrucciones. NO hagas preguntas.
-Escribe directamente el párrafo explicativo."""
+1. PRIMERA ORACIÓN: Qué tipo de gasto/contratación es y descripción general.
+2. SEGUNDA ORACIÓN: Qué organismo del gobierno lo solicita y el área responsable.
+3. TERCERA ORACIÓN: Cuál es el objetivo o propósito específico de este gasto.
+4. CUARTA ORACIÓN: Detalles técnicos relevantes (cantidades, plazos, ubicación si aplica).
+5. QUINTA ORACIÓN: Monto del gasto si está disponible, o impacto esperado.
+
+IMPORTANTE: Escribe las 5 oraciones completas, cada una debe tener entre 15-25 palabras.
+NO hagas preguntas. Escribe directamente el resumen."""
             
             # Process GASTOS one by one
             total_gastos = len(existing_data['gastos'])
@@ -484,9 +486,9 @@ Escribe directamente el párrafo explicativo."""
                 prompt = f"{g.get('nombre', '')}\n{clean_text}"
                 
                 try:
-                    corto = get_ai_summary_safe(client, prompt, CORTO, 250)
+                    corto = get_ai_summary_safe(client, prompt, CORTO, 100)  # Short title
                     time.sleep(0.5)  # Rate limiting
-                    largo = get_ai_summary_safe(client, prompt, LARGO, 250)
+                    largo = get_ai_summary_safe(client, prompt, LARGO, 500)  # 5 sentences need more chars
                     
                     # Build fallback using organismo and nombre
                     org = g.get('organismo', 'Gobierno de la Ciudad')[:40]
@@ -522,9 +524,9 @@ Escribe directamente el párrafo explicativo."""
                 prompt = f"{s.get('nombre', '')}\n{clean_text}"
                 
                 try:
-                    corto = get_ai_summary_safe(client, prompt, CORTO, 250)
+                    corto = get_ai_summary_safe(client, prompt, CORTO, 100)  # Short title
                     time.sleep(0.5)
-                    largo = get_ai_summary_safe(client, prompt, LARGO, 250)
+                    largo = get_ai_summary_safe(client, prompt, LARGO, 500)  # 5 sentences need more chars
                     
                     # Build fallback using organismo and nombre
                     org = s.get('organismo', 'Gobierno de la Ciudad')[:40]
