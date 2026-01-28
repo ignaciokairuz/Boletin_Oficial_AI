@@ -90,9 +90,37 @@ def strip_header_boilerplate(text):
     return result
 
 def clean_ai_response(text):
-    if not text: return ""
-    if "Error code:" in text or "BadRequestError" in text: return "Ver documento"
+    if not text: return None
+    if "Error code:" in text or "BadRequestError" in text: return None
+    
     result = text
+    
+    # Detect meta-responses (AI asking for clarification instead of summarizing)
+    meta_phrases = [
+        "necesito que me indiques",
+        "podrías especificar",
+        "¿podrías",
+        "?podés",
+        "necesito saber",
+        "para poder describir",
+        "para poder explicar",
+        "para poder responder",
+        "no tengo suficiente información",
+        "no dispongo de",
+        "me indiques cuál",
+        "especifica el objeto",
+        "podés especificar",
+        "necesitaría más",
+        "Para poder describir en tres o cuatro frases",
+        "necesito que me indiques cuál es el bien",
+    ]
+    
+    lower_result = result.lower()
+    for phrase in meta_phrases:
+        if phrase.lower() in lower_result:
+            return None  # Return None so caller uses fallback
+    
+    # Clean markdown artifacts
     markers = ["assistantfinal", "final**", "**💬", "Response:**", "**Título:**", 
                "🤔 Analysis:", "Analysis:**", "Análisis:**"]
     for m in markers:
@@ -101,7 +129,15 @@ def clean_ai_response(text):
     result = re.sub(r'\*([^*]+)\*', r'\1', result)
     result = re.sub(r'`([^`]+)`', r'\1', result)
     result = re.sub(r'#{1,6}\s+', '', result)
-    return result.strip()[:600]
+    
+    # Final cleanup
+    result = result.strip()[:600]
+    
+    # If too short or just garbage, return None
+    if len(result) < 10:
+        return None
+        
+    return result
 
 def process_norm_parallel(item):
     """Process a single norm - designed for parallel execution"""
@@ -409,18 +445,33 @@ def main():
         
         try:
             client = Client("amd/gpt-oss-120b-chatbot")
-            # Improved prompts for more descriptive summaries
-            CORTO = """Genera un título descriptivo de 10-15 palabras que explique QUÉ se compra o contrata.
-Ignora números de resolución, expedientes y decretos. 
-Enfócate en: qué producto/servicio se adquiere, para qué organismo es.
-NO uses 'Ver documento' ni referencias legales. Ejemplo: 'Compra de computadoras para escuelas públicas del distrito norte'"""
             
-            LARGO = """Explica en 3-4 oraciones simples para un ciudadano común:
-1) Qué se compra o contrata exactamente
-2) Para qué organismo o área del gobierno es
-3) Cuál es el propósito o para qué se usará
-4) Si hay detalles relevantes (cantidades, ubicaciones, plazos)
-NO menciones números de resolución/expediente. Usa lenguaje sencillo."""
+            # v19: AGGRESSIVE prompts that PREVENT meta-responses
+            CORTO = """TAREA: Genera un título de 10-15 palabras describiendo el gasto.
+
+REGLAS CRÍTICAS:
+- NUNCA pidas más información
+- NUNCA hagas preguntas
+- NUNCA digas "necesito saber", "podrías especificar", etc.
+- SIEMPRE genera un título aunque la info sea incompleta
+- Si no hay suficiente info, usa el tipo de documento y organismo
+- NO uses "Ver documento" nunca
+
+EJEMPLO: "Licitación de obras de infraestructura para la Dirección de Salud"
+
+RESPONDE SOLO CON EL TÍTULO, nada más."""
+
+            LARGO = """TAREA: Resume en 3-4 oraciones qué es este gasto del gobierno.
+
+REGLAS CRÍTICAS:
+- NUNCA pidas más información
+- NUNCA hagas preguntas al usuario
+- NUNCA uses frases como "necesito que me indiques", "¿podrías especificar?"
+- SIEMPRE genera un resumen con la información disponible
+- Si falta info, escribe lo que SÍ puedes deducir del texto
+- Describe: qué se contrata, para qué área, propósito general
+
+RESPONDE SOLO CON EL RESUMEN, sin preguntas ni aclaraciones."""
             
             # Process GASTOS one by one
             total_gastos = len(existing_data['gastos'])
@@ -438,15 +489,22 @@ NO menciones números de resolución/expediente. Usa lenguaje sencillo."""
                     time.sleep(0.5)  # Rate limiting
                     largo = get_ai_summary_safe(client, prompt, LARGO, 250)
                     
-                    if corto and len(corto) > 5:
+                    # Build fallback using organismo and nombre
+                    org = g.get('organismo', 'Gobierno de la Ciudad')[:40]
+                    doc_name = g.get('nombre', 'Documento')[:50]
+                    fallback_corto = f"Gasto de {org} - {doc_name}"
+                    fallback_largo = g.get('sumario', g.get('text_snippet', ''))[:300] or f"Documento del {org}."
+                    
+                    if corto and len(corto) > 10:
                         g['resumen_corto'] = corto
-                        g['resumen_largo'] = largo if largo else g.get('sumario', '')[:300]
+                        g['resumen_largo'] = largo if largo and len(largo) > 10 else fallback_largo
                     else:
-                        g['resumen_corto'] = g.get('nombre', '')[:80] or "Sin resumen"
-                        g['resumen_largo'] = g.get('sumario', '')[:300]
+                        g['resumen_corto'] = fallback_corto
+                        g['resumen_largo'] = fallback_largo
                 except Exception as e:
-                    g['resumen_corto'] = g.get('nombre', '')[:80] or "Sin resumen"
-                    g['resumen_largo'] = g.get('sumario', '')[:300]
+                    org = g.get('organismo', 'Gobierno de la Ciudad')[:40]
+                    g['resumen_corto'] = f"Gasto de {org}"
+                    g['resumen_largo'] = g.get('sumario', '')[:300] or "Ver documento para más detalles."
                 
                 if (i+1) % 10 == 0:
                     print(f"   Gastos: {i+1}/{total_gastos}")
@@ -469,15 +527,22 @@ NO menciones números de resolución/expediente. Usa lenguaje sencillo."""
                     time.sleep(0.5)
                     largo = get_ai_summary_safe(client, prompt, LARGO, 250)
                     
-                    if corto and len(corto) > 5:
+                    # Build fallback using organismo and nombre
+                    org = s.get('organismo', 'Gobierno de la Ciudad')[:40]
+                    doc_name = s.get('nombre', 'Norma')[:50]
+                    fallback_corto = f"Norma de {org} - {doc_name}"
+                    fallback_largo = s.get('sumario', s.get('text_snippet', ''))[:300] or f"Documento del {org}."
+                    
+                    if corto and len(corto) > 10:
                         s['resumen_corto'] = corto
-                        s['resumen_largo'] = largo if largo else s.get('sumario', '')[:300]
+                        s['resumen_largo'] = largo if largo and len(largo) > 10 else fallback_largo
                     else:
-                        s['resumen_corto'] = s.get('nombre', '')[:80] or "Sin resumen"
-                        s['resumen_largo'] = s.get('sumario', '')[:300]
+                        s['resumen_corto'] = fallback_corto
+                        s['resumen_largo'] = fallback_largo
                 except:
-                    s['resumen_corto'] = s.get('nombre', '')[:80] or "Sin resumen"
-                    s['resumen_largo'] = s.get('sumario', '')[:300]
+                    org = s.get('organismo', 'Gobierno de la Ciudad')[:40]
+                    s['resumen_corto'] = f"Norma de {org}"
+                    s['resumen_largo'] = s.get('sumario', '')[:300] or "Ver documento para más detalles."
                 
                 if (i+1) % 10 == 0:
                     print(f"   Normas: {i+1}/{total_normas}")
