@@ -456,23 +456,24 @@ def main():
         try:
             client = Client("amd/gpt-oss-120b-chatbot")
             
-            # v20: DIFFERENTIATED prompts - CORTO is short title, LARGO is detailed explanation
+            # v22: NARRATIVE approach - structure didn't work, AI ignores numbered lists
             CORTO = """Genera un TÍTULO CORTO de máximo 8 palabras.
 Solo un titular tipo diario, sin puntos ni explicaciones.
 NO repitas instrucciones. NO hagas preguntas.
 Ejemplo: "Compra de computadoras para Educación"
 Responde SOLO el título."""
 
-            LARGO = """Escribe un RESUMEN DETALLADO con exactamente 5 oraciones informativas:
+            LARGO = """Escribe un PÁRRAFO INFORMATIVO para un ciudadano describiendo este gasto público.
 
-1. PRIMERA ORACIÓN: Qué tipo de gasto/contratación es y descripción general.
-2. SEGUNDA ORACIÓN: Qué organismo del gobierno lo solicita y el área responsable.
-3. TERCERA ORACIÓN: Cuál es el objetivo o propósito específico de este gasto.
-4. CUARTA ORACIÓN: Detalles técnicos relevantes (cantidades, plazos, ubicación si aplica).
-5. QUINTA ORACIÓN: Monto del gasto si está disponible, o impacto esperado.
+Incluye en forma de texto corrido (NO uses números ni puntos):
+- Qué se está comprando o contratando
+- Qué área del gobierno lo necesita
+- Para qué se va a usar
+- Detalles importantes (cantidad, ubicación, o plazo si aplica)
+- El monto total si está disponible
 
-IMPORTANTE: Escribe las 5 oraciones completas, cada una debe tener entre 15-25 palabras.
-NO hagas preguntas. Escribe directamente el resumen."""
+Escribe UN SOLO PÁRRAFO de aproximadamente 80-120 palabras. Usa lenguaje simple y directo.
+NO hagas preguntas. NO repitas estas instrucciones."""
             
             # Process GASTOS one by one
             total_gastos = len(existing_data['gastos'])
@@ -488,7 +489,7 @@ NO hagas preguntas. Escribe directamente el resumen."""
                 try:
                     corto = get_ai_summary_safe(client, prompt, CORTO, 100)  # Short title
                     time.sleep(0.5)  # Rate limiting
-                    largo = get_ai_summary_safe(client, prompt, LARGO, 500)  # 5 sentences need more chars
+                    largo = get_ai_summary_safe(client, prompt, LARGO, 600)  # 80-120 word paragraph
                     
                     # Build fallback using organismo and nombre
                     org = g.get('organismo', 'Gobierno de la Ciudad')[:40]
@@ -526,7 +527,7 @@ NO hagas preguntas. Escribe directamente el resumen."""
                 try:
                     corto = get_ai_summary_safe(client, prompt, CORTO, 100)  # Short title
                     time.sleep(0.5)
-                    largo = get_ai_summary_safe(client, prompt, LARGO, 500)  # 5 sentences need more chars
+                    largo = get_ai_summary_safe(client, prompt, LARGO, 600)  # 80-120 word paragraph
                     
                     # Build fallback using organismo and nombre
                     org = s.get('organismo', 'Gobierno de la Ciudad')[:40]
