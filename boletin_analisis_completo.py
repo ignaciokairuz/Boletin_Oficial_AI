@@ -1,10 +1,8 @@
 """
-Boletín Oficial - Análisis v13 TURBO
-------------------------------------
-PERFORMANCE: Parallel processing with ThreadPoolExecutor
-- PDF Downloads: 10 concurrent threads
-- AI Summaries: 5 concurrent threads
-Expected time: 30-60 min (down from 3+ hours)
+Boletín Oficial - Análisis v24
+------------------------------
+AI: DeepSeek Chat (replaces dead Gradio API)
+PERFORMANCE: Parallel PDF downloads with ThreadPoolExecutor
 """
 import requests
 import json
@@ -13,10 +11,134 @@ import re
 import time
 import os
 import sys
+import base64
 from datetime import datetime
 from pypdf import PdfReader
-from gradio_client import Client
+from pow_solver import solve_pow, encode_pow_response
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+DEEPSEEK_API = "https://chat.deepseek.com/api/v0"
+
+
+class DeepSeekAI:
+    """Lightweight DeepSeek client for AI summaries."""
+
+    def __init__(self, session_path=None):
+        """Initialize from env var DEEPSEEK_SESSION or session file."""
+        self.session = requests.Session()
+
+        session_json = os.environ.get('DEEPSEEK_SESSION')
+        if session_json:
+            data = json.loads(session_json)
+            print("   🔑 DeepSeek session loaded from env var")
+        elif session_path and os.path.exists(session_path):
+            with open(session_path) as f:
+                data = json.load(f)
+            print(f"   🔑 DeepSeek session loaded from {session_path}")
+        else:
+            raise ValueError(
+                "No DeepSeek session found. "
+                "Set DEEPSEEK_SESSION env var or provide session_cookies.json"
+            )
+
+        cookies = data.get("cookies", {})
+        bearer = data.get("bearer_token", "")
+        if isinstance(cookies, list):
+            cookies = {c["name"]: c["value"] for c in cookies}
+        if not bearer:
+            raise ValueError("Missing bearer_token in session data")
+
+        self.session.cookies.update(cookies)
+        self.session.headers.update({
+            'accept': '*/*',
+            'authorization': f'Bearer {bearer}',
+            'content-type': 'application/json',
+            'origin': 'https://chat.deepseek.com',
+            'referer': 'https://chat.deepseek.com/',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                          'AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/147.0.0.0 Safari/537.36',
+            'x-app-version': '2.0.0',
+            'x-client-locale': 'en_US',
+            'x-client-platform': 'web',
+        })
+
+    def _create_chat(self):
+        r = self.session.post(f"{DEEPSEEK_API}/chat_session/create", json={})
+        r.raise_for_status()
+        d = r.json()
+        if d.get("code") != 0:
+            raise Exception(f"Chat create failed: {d}")
+        biz = d["data"]["biz_data"]
+        return biz.get("id") or biz.get("chat_session", {}).get("id")
+
+    def _get_pow(self):
+        r = self.session.post(
+            f"{DEEPSEEK_API}/chat/create_pow_challenge",
+            json={"target_path": "/api/v0/chat/completion"}
+        )
+        r.raise_for_status()
+        d = r.json()
+        if d.get("code") != 0:
+            raise Exception(f"PoW failed: {d}")
+        ch = d["data"]["biz_data"]["challenge"]
+        ans = solve_pow(ch["challenge"], ch["salt"], ch["expire_at"], ch["difficulty"])
+        return encode_pow_response(ch, ans)
+
+    def predict(self, prompt, max_input=1000):
+        """Send prompt to DeepSeek, return response text."""
+        chat_id = self._create_chat()
+        pow_hdr = self._get_pow()
+
+        resp = self.session.post(
+            f"{DEEPSEEK_API}/chat/completion",
+            json={
+                "chat_session_id": chat_id,
+                "parent_message_id": None,
+                "model_type": "default",
+                "prompt": prompt[:max_input],
+                "ref_file_ids": [],
+                "thinking_enabled": False,
+                "search_enabled": False,
+                "preempt": False,
+            },
+            headers={"x-ds-pow-response": pow_hdr},
+            stream=True,
+            timeout=120,
+        )
+        if resp.status_code != 200:
+            raise Exception(f"HTTP {resp.status_code}")
+
+        text = ""
+        streaming = False
+        for line in resp.iter_lines(decode_unicode=True):
+            if not line:
+                continue
+            if line.startswith("event: "):
+                if "close" in line:
+                    break
+                continue
+            if not line.startswith("data: "):
+                continue
+            try:
+                d = json.loads(line[6:])
+            except json.JSONDecodeError:
+                continue
+            if isinstance(d.get("v"), dict) and "response" in d["v"]:
+                for frag in d["v"]["response"].get("fragments", []):
+                    c = frag.get("content", "")
+                    if c:
+                        text += c
+                continue
+            if d.get("o") == "APPEND" and isinstance(d.get("v"), str):
+                if "thinking" not in d.get("p", ""):
+                    streaming = True
+                    text += d["v"]
+                continue
+            if isinstance(d.get("v"), str) and "o" not in d and "p" not in d:
+                if streaming:
+                    text += d["v"]
+        return text.strip()
 
 # Selenium imports
 from selenium import webdriver
@@ -182,16 +304,13 @@ def process_anexo_parallel(anexo):
         return None
 
 def get_ai_summary_safe(client, prompt, system_prompt, max_chars=300):
-    """Thread-safe AI summary with aggressive truncation"""
+    """AI summary using DeepSeek with combined prompt"""
     try:
-        result = client.predict(
-            message=prompt[:max_chars], 
-            system_prompt=system_prompt, 
-            temperature=0.3, 
-            api_name="/chat"
-        )
+        combined = f"{system_prompt}\n\nTexto a resumir:\n{prompt[:max_chars]}"
+        result = client.predict(combined, max_input=max_chars + len(system_prompt) + 50)
         return clean_ai_response(result)
-    except:
+    except Exception as e:
+        print(f"      ⚠️ DeepSeek error: {e}")
         return None
 
 def extract_monto_from_detail(driver):
@@ -454,7 +573,7 @@ def main():
         print(f"\n🤖 Generando resúmenes IA (SECUENCIAL para evitar corrupción)...")
         
         try:
-            client = Client("amd/gpt-oss-120b-chatbot")
+            client = DeepSeekAI(session_path="session_cookies.json")
             
             # v22: NARRATIVE approach - structure didn't work, AI ignores numbered lists
             CORTO = """Genera un TÍTULO CORTO de máximo 8 palabras.

@@ -1,5 +1,4 @@
 requests
 pypdf
-gradio_client
 selenium
 webdriver-manager
