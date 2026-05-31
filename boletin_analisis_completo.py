@@ -1,10 +1,10 @@
 """
-Boletín Oficial - Análisis v24
+Boletín Oficial - Análisis v25
 ------------------------------
-AI: DeepSeek Chat (replaces dead Gradio API)
+AI: DeepSeek Chat (stealth HTTP client)
 PERFORMANCE: Parallel PDF downloads with ThreadPoolExecutor
+STEALTH: curl_cffi browser TLS fingerprint, human-like timing, header randomization
 """
-import requests
 import json
 import io
 import re
@@ -12,21 +12,54 @@ import time
 import os
 import sys
 import base64
+import random
 from datetime import datetime
 from pypdf import PdfReader
 from pow_solver import solve_pow, encode_pow_response
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+# TLS fingerprint evasion: curl_cffi impersonates real browsers at the
+# TLS layer (JA3/JA4 fingerprint, HTTP/2 settings, header order).
+try:
+    from curl_cffi.requests import Session as CffiSession
+    HAVE_CFFI = True
+except ImportError:
+    HAVE_CFFI = False
+
+import requests  # always needed for PDF downloads etc.
+
 DEEPSEEK_API = "https://chat.deepseek.com/api/v0"
 
 
 class DeepSeekAI:
-    """Lightweight DeepSeek client for AI summaries."""
+    """Stealth DeepSeek client with browser TLS fingerprint and anti-detection."""
+
+    # Realistic header pools — pick one per session, stay consistent
+    _USER_AGENTS = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36',
+    ]
+    _SEC_CH_UA = [
+        '"Microsoft Edge";v="147", "Not.A/Brand";v="8", "Chromium";v="147"',
+        '"Chromium";v="147", "Not.A/Brand";v="8", "Google Chrome";v="147"',
+        '"Microsoft Edge";v="146", "Chromium";v="146", "Not-A.Brand";v="24"',
+        '"Chromium";v="146", "Google Chrome";v="146", "Not-A.Brand";v="24"',
+    ]
+    _TIMEZONES = ['-10800', '-14400', '-18000', '-21600', '0', '3600']
+    _ACCEPT_LANGS = [
+        'en-US,en;q=0.9', 'en-US,en;q=0.9,es;q=0.8',
+        'en-US,en;q=0.9,pt-BR;q=0.8,pt;q=0.7', 'en,en-US;q=0.9',
+    ]
+    _MAX_RETRIES = 4
 
     def __init__(self, session_path=None):
         """Initialize from env var DEEPSEEK_SESSION or session file."""
-        self.session = requests.Session()
-
         session_json = os.environ.get('DEEPSEEK_SESSION')
         if session_json:
             data = json.loads(session_json)
@@ -48,23 +81,61 @@ class DeepSeekAI:
         if not bearer:
             raise ValueError("Missing bearer_token in session data")
 
-        self.session.cookies.update(cookies)
-        self.session.headers.update({
+        # Build randomized but consistent fingerprint for this session
+        ua = random.choice(self._USER_AGENTS)
+        headers = {
             'accept': '*/*',
+            'accept-language': random.choice(self._ACCEPT_LANGS),
             'authorization': f'Bearer {bearer}',
             'content-type': 'application/json',
             'origin': 'https://chat.deepseek.com',
             'referer': 'https://chat.deepseek.com/',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                          'AppleWebKit/537.36 (KHTML, like Gecko) '
-                          'Chrome/147.0.0.0 Safari/537.36',
+            'sec-ch-ua': random.choice(self._SEC_CH_UA),
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'user-agent': ua,
             'x-app-version': '2.0.0',
             'x-client-locale': 'en_US',
             'x-client-platform': 'web',
-        })
+            'x-client-timezone-offset': random.choice(self._TIMEZONES),
+            'x-client-version': '2.0.0',
+        }
+
+        if HAVE_CFFI:
+            self.session = CffiSession(impersonate="chrome146")
+            print("   🛡️ TLS: curl_cffi (browser fingerprint)")
+        else:
+            self.session = requests.Session()
+            print("   ⚠️ TLS: requests (detectable — install curl_cffi)")
+
+        for name, value in cookies.items():
+            self.session.cookies.set(name, value, domain="chat.deepseek.com")
+        self.session.headers.update(headers)
+
+    def _request(self, method, url, retries=None, **kwargs):
+        """Request with automatic retry + exponential backoff on 429/5xx."""
+        retries = retries or self._MAX_RETRIES
+        resp = None
+        for attempt in range(retries):
+            resp = self.session.request(method, url, **kwargs)
+            if resp.status_code not in {429, 500, 502, 503, 504}:
+                return resp
+            print(f"      ⚠️ HTTP {resp.status_code} — backing off...")
+            if attempt < retries - 1:
+                delay = min(2 ** attempt, 60) * random.uniform(0.5, 1.5)
+                time.sleep(delay)
+        return resp
+
+    def _human_delay(self, low=0.8, high=2.5):
+        """Random human-like pause between API calls."""
+        time.sleep(random.uniform(low, high))
 
     def _create_chat(self):
-        r = self.session.post(f"{DEEPSEEK_API}/chat_session/create", json={})
+        self._human_delay(1.0, 2.5)
+        r = self._request('POST', f"{DEEPSEEK_API}/chat_session/create", json={})
         r.raise_for_status()
         d = r.json()
         if d.get("code") != 0:
@@ -73,7 +144,9 @@ class DeepSeekAI:
         return biz.get("id") or biz.get("chat_session", {}).get("id")
 
     def _get_pow(self):
-        r = self.session.post(
+        self._human_delay(0.3, 0.8)
+        r = self._request(
+            'POST',
             f"{DEEPSEEK_API}/chat/create_pow_challenge",
             json={"target_path": "/api/v0/chat/completion"}
         )
@@ -90,7 +163,11 @@ class DeepSeekAI:
         chat_id = self._create_chat()
         pow_hdr = self._get_pow()
 
-        resp = self.session.post(
+        self._human_delay(0.3, 0.7)  # pause before sending
+
+        # Use buffered response (curl_cffi doesn't support iter_lines)
+        resp = self._request(
+            'POST',
             f"{DEEPSEEK_API}/chat/completion",
             json={
                 "chat_session_id": chat_id,
@@ -103,15 +180,28 @@ class DeepSeekAI:
                 "preempt": False,
             },
             headers={"x-ds-pow-response": pow_hdr},
-            stream=True,
-            timeout=120,
+            timeout=300,
         )
         if resp.status_code != 200:
             raise Exception(f"HTTP {resp.status_code}")
 
+        raw = resp.text if hasattr(resp, 'text') else resp.content.decode('utf-8', errors='replace')
+
+        # Check for JSON error
+        content_type = resp.headers.get('content-type', '')
+        if 'application/json' in content_type:
+            try:
+                d = json.loads(raw)
+                if d.get("code") != 0:
+                    raise Exception(f"API error: {d}")
+            except json.JSONDecodeError:
+                pass
+
+        # Parse SSE events from buffered response
         text = ""
         streaming = False
-        for line in resp.iter_lines(decode_unicode=True):
+        for line in raw.split('\n'):
+            line = line.strip()
             if not line:
                 continue
             if line.startswith("event: "):

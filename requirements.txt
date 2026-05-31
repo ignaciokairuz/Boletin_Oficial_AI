@@ -2,3 +2,4 @@ requests
 pypdf
 selenium
 webdriver-manager
+curl_cffi
