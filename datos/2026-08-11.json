@@ -1,0 +1,229 @@
+{
+  "fecha": "2026-08-11",
+  "fecha_display": "11/08/2026",
+  "gastos": [],
+  "sin_gastos": [],
+  "licitaciones": [
+    {
+      "numero": "541-2645-CME26",
+      "nombre": "LAMPARA DECARGA METAL",
+      "tipo": "Contratación Menor",
+      "fecha": "11/08/2026",
+      "estado": "Publicado",
+      "unidad": "541 - ENTE AUTARQUICO TEATRO COLON",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=541-2645-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - LAMPARA DECARGA METAL"
+    },
+    {
+      "numero": "3206-1142-LPU26",
+      "nombre": "Adquisición de Grupos electrógenos para DGDCIV",
+      "tipo": "Licitación Pública",
+      "fecha": "11/08/2026",
+      "estado": "Publicado",
+      "unidad": "3206 - Subsecretaria de Emergencias",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=3206-1142-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - Adquisición de Grupos electrógenos para DGDCIV"
+    },
+    {
+      "numero": "420-2589-CME26",
+      "nombre": "Adquisición de CD23, PCR y otros (Inmunología)",
+      "tipo": "Contratación Menor",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "420 - HTAL. RICARDO GUTIERREZ",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=420-2589-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - Adquisición de CD23, PCR y otros (Inmunología)"
+    },
+    {
+      "numero": "421-2375-CME26",
+      "nombre": "Adquisición de Camilla para el Servicio de Retina",
+      "tipo": "Contratación Menor",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "421 - HTAL. PEDRO LAGLEYZE",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=421-2375-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - Adquisición de Camilla para el Servicio de Retina"
+    },
+    {
+      "numero": "420-0935-CDI26",
+      "nombre": "Adquisicion de Tutor Externo monoplanar (Ortopedia y Traumatología Paciente:M.N.A)",
+      "tipo": "Contratación Directa",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "420 - HTAL. RICARDO GUTIERREZ",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=420-0935-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - Adquisicion de Tutor Externo monoplanar (Ortopedia y Traumatología Paciente:M.N.A)"
+    },
+    {
+      "numero": "441-1242-LPU26",
+      "nombre": "Tarjetas microbiología",
+      "tipo": "Licitación Pública",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "441 - HTAL. ABEL ZUBIZARRETA",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=441-1242-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - Tarjetas microbiología"
+    },
+    {
+      "numero": "441-1217-LPU26",
+      "nombre": "Reactivos para biomarcadores",
+      "tipo": "Licitación Pública",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "441 - HTAL. ABEL ZUBIZARRETA",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=441-1217-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - Reactivos para biomarcadores"
+    },
+    {
+      "numero": "446-1254-LPU26",
+      "nombre": "INCLUIR SALUD - PÉREZ HÉCTOR DANIEL - PRÓTESIS AMPUTACIÓN MIEMBRO INFERIOR",
+      "tipo": "Licitación Pública",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "446 - INSTITUTO DE REHABILITACION PSICOFICA",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=446-1254-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - INCLUIR SALUD - PÉREZ HÉCTOR DANIEL - PRÓTESIS AMPUTACIÓN MIEMBRO INFERIOR"
+    },
+    {
+      "numero": "416-0926-CDI26",
+      "nombre": "ELECTRODO P/POTENCIALES EVOCADOS, ETC. - PTE. RODRIGUEZ LUCAS - PED. 42040 - ABAST. INMED.",
+      "tipo": "Contratación Directa",
+      "fecha": "11/08/2026",
+      "estado": "En Evaluacion",
+      "unidad": "416 - HTAL. CARLOS G. DURAND",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=416-0926-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - ELECTRODO P/POTENCIALES EVOCADOS, ETC. - PTE. RODRIGUEZ LUCAS - PED. 42040 - ABAST. INMED."
+    },
+    {
+      "numero": "417-0925-CDI26",
+      "nombre": "Adquisición de tubo endotraqueal -Pcte: Buleje Halanocca Noah - Cirugía/Farmacia",
+      "tipo": "Contratación Directa",
+      "fecha": "11/08/2026",
+      "estado": "Desierto",
+      "unidad": "417 - HTAL. PEDRO DE ELIZALDE",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=417-0925-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - Adquisición de tubo endotraqueal -Pcte: Buleje Halanocca Noah - Cirugía/Farmacia"
+    },
+    {
+      "numero": "440-2670-CME26",
+      "nombre": "CENTRIFUGA DE MESA.",
+      "tipo": "Contratación Menor",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "440 - HTAL. DALMACIO VELEZ SARSFIELD",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=440-2670-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - CENTRIFUGA DE MESA."
+    },
+    {
+      "numero": "446-1252-LPU26",
+      "nombre": "AYUDA MEDICA - MOLINA LAUTARO - DOS (2) CAMBIOS DE CONO DE ENCHUFE PROTESIS AMPUTACION M.I.",
+      "tipo": "Licitación Pública",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "446 - INSTITUTO DE REHABILITACION PSICOFICA",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=446-1252-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - AYUDA MEDICA - MOLINA LAUTARO - DOS (2) CAMBIOS DE CONO DE ENCHUFE PROTESIS AMPUTACION M.I."
+    },
+    {
+      "numero": "425-2596-CME26",
+      "nombre": "Adquisición de óptica para Histeroscopia. P. 296. Ginecología",
+      "tipo": "Contratación Menor",
+      "fecha": "11/08/2026",
+      "estado": "En Evaluacion",
+      "unidad": "425 - HTAL. JOSE M. PENNA",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=425-2596-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - Adquisición de óptica para Histeroscopia. P. 296. Ginecología"
+    },
+    {
+      "numero": "415-1253-LPU26",
+      "nombre": "INSUMOS PARA ODONTOLOGÍA",
+      "tipo": "Licitación Pública",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "415 - HTAL. ODONTOLOGICO JOSE DUEÑAS",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=415-1253-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - INSUMOS PARA ODONTOLOGÍA"
+    },
+    {
+      "numero": "422-1205-LPU26",
+      "nombre": "Servicio de TV por cable",
+      "tipo": "Licitación Pública",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "422 - HTAL. BRAULIO MOYANO",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=422-1205-LPU26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Licitación Pública - Servicio de TV por cable"
+    },
+    {
+      "numero": "438-2619-CME26",
+      "nombre": "CHALECOS Y PROTECTOR - PLOMADOS",
+      "tipo": "Contratación Menor",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "438 - HTAL. ENRIQUE TORNU",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=438-2619-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - CHALECOS Y PROTECTOR - PLOMADOS"
+    },
+    {
+      "numero": "412-2679-CME26",
+      "nombre": "ADQUISICION DE INSUMOS (GUIAS AMPLATZ, ETC)",
+      "tipo": "Contratación Menor",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "412 - HTAL. COSME ARGERICH",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=412-2679-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - ADQUISICION DE INSUMOS (GUIAS AMPLATZ, ETC)"
+    },
+    {
+      "numero": "422-2623-CME26",
+      "nombre": "Adquisición de cardio desfibrilador portátil para carro de RCP",
+      "tipo": "Contratación Menor",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "422 - HTAL. BRAULIO MOYANO",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=422-2623-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - Adquisición de cardio desfibrilador portátil para carro de RCP"
+    },
+    {
+      "numero": "418-0918-CDI26",
+      "nombre": "QUIROFANO - PIEZA DE MANO Y PROTECTOR DE DURAMADRE COMPATIBLE CON CRANEOTOMO NSK",
+      "tipo": "Contratación Directa",
+      "fecha": "11/08/2026",
+      "estado": "En Evaluacion",
+      "unidad": "418 - HTAL. JUAN A. FERNANDEZ",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=418-0918-CDI26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Directa - QUIROFANO - PIEZA DE MANO Y PROTECTOR DE DURAMADRE COMPATIBLE CON CRANEOTOMO NSK"
+    },
+    {
+      "numero": "418-2644-CME26",
+      "nombre": "NEONATOLOGÍA. ADQ. DE LANCETAS Y SENSOR DE TEMPERATURA DE PIEL. ANUAL",
+      "tipo": "Contratación Menor",
+      "fecha": "11/08/2026",
+      "estado": "En Apertura",
+      "unidad": "418 - HTAL. JUAN A. FERNANDEZ",
+      "url": "https://www.buenosairescompras.gob.ar/GCBA/buscadorDePliegos.aspx?id=418-2644-CME26",
+      "monto_fmt": "Error extrayendo monto",
+      "resumen_ia": "Contratación Menor - NEONATOLOGÍA. ADQ. DE LANCETAS Y SENSOR DE TEMPERATURA DE PIEL. ANUAL"
+    }
+  ],
+  "organismos": []
+}
